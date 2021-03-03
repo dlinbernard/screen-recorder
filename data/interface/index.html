@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Screen Recorder</title>
+		<meta http-equiv="content-language" content="en">
+    <link type="text/css" rel="stylesheet" href="index.css">
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body>
+    <div class="extra">
+      <table>
+        <tr>
+          <td id="draw" title="Draw on page addon">
+            <svg width="12" height="12" viewBox="0 0 32 32">
+              <path d="M30,15H19v-1c0-0.6-0.4-1-1-1h-4c-0.6,0-1,0.4-1,1v0.5c-3.1-1-5.6-3.4-6.5-6.5H7c0.6,0,1-0.4,1-1V3c0-0.6-0.4-1-1-1H3  C2.4,2,2,2.4,2,3v4c0,0.6,0.4,1,1,1h1.4c0.7,2.9,2.6,5.4,5,7H2c-0.6,0-1,0.4-1,1s0.4,1,1,1h11v1c0,0.6,0.4,1,1,1h4c0.6,0,1-0.4,1-1  v-0.5c3.1,1,5.6,3.4,6.5,6.5H25c-0.6,0-1,0.4-1,1v4c0,0.6,0.4,1,1,1h4c0.6,0,1-0.4,1-1v-4c0-0.6-0.4-1-1-1h-1.4  c-0.7-2.9-2.6-5.4-5-7H30c0.6,0,1-0.4,1-1S30.6,15,30,15z"/>
+            </svg>
+          </td>
+        </tr>
+        <tr>
+          <td id="edit" title="Page edit addon">
+            <svg width="11" height="11" viewBox="0 0 122.8799 122.8799">
+              <path d="M 97.67039,4.1961763 C 92.151912,4.2780457 86.882564,6.5072591 82.980788,10.410653 L 112.98202,40.411895 C 121.26823,32.126758 121.26823,18.692756 112.98202,10.407619 108.92735,6.3529159 103.40396,4.1122613 97.67039,4.1961763 Z M 79.060339,14.346286 17.094591,76.315069 47.041205,106.2617 109.00998,44.292909 Z M 12.985981,80.420629 4.6079962,118.78169 42.969029,110.40671 Z"/>
+            </svg>
+          </td>
+        </tr>
+        <tr>
+          <td id="webapp" title="Web application (PWA)">
+            <svg width="12" height="12" viewBox="0 0 16 16">
+              <path d="M15,3c0-0.552-0.448-1-1-1H2C1.448,2,1,2.448,1,3v9H0c0,1.105,0.895,2,2,2h12c1.105,0,2-0.895,2-2h-1V3z M14,12H2V3h12V12z"/>
+            </svg>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="toolbar">
+      <table>
+        <tr>
+          <td id="reload" title="Reload UI">
+            <svg width="10" height="10" viewBox="0 0 512 512">
+              <path d="M281.525,228.102l104.758-78.042 c12.082-12.085,12.082-24.259,0-36.342L281.525,35.674c-3.274-2.359-7.359-3.725-11.723-3.725c-10.992,0-19.803,8.536-19.803,19.083  v35.429C144.611,86.737,59.205,172.046,59.205,277.258c0,105.396,85.672,190.793,191.248,190.793 c98.03,0,178.809-73.498,189.977-168.169c0.092-0.275,0.367-3.187,0.367-4.455c0-9.992-8.181-18.169-18.261-18.169h-45.793 c-14.993,0-26.349,10.355-27.893,18.986c-8.811,46.156-49.519,80.954-98.397,80.954c-55.329,0-100.127-44.701-100.127-99.94 c0-55.064,44.523-99.667,99.674-99.941v35.437c0,10.541,8.811,19.076,19.803,19.076C274.166,231.83,278.251,230.471,281.525,228.102 z"/>
+            </svg>
+          </td>
+        </tr>
+        <tr>
+          <td id="support" title="Open support page">
+            <svg width="10" height="10" viewBox="0 0 1792 1792">
+              <path d="M1088 1256v240q0 16-12 28t-28 12h-240q-16 0-28-12t-12-28v-240q0-16 12-28t28-12h240q16 0 28 12t12 28zm316-600q0 54-15.5 101t-35 76.5-55 59.5-57.5 43.5-61 35.5q-41 23-68.5 65t-27.5 67q0 17-12 32.5t-28 15.5h-240q-15 0-25.5-18.5t-10.5-37.5v-45q0-83 65-156.5t143-108.5q59-27 84-56t25-76q0-42-46.5-74t-107.5-32q-65 0-108 29-35 25-107 115-13 16-31 16-12 0-25-8l-164-125q-13-10-15.5-25t5.5-28q160-266 464-266 80 0 161 31t146 83 106 127.5 41 158.5z"/>
+            </svg>
+          </td>
+        </tr>
+        <tr>
+          <td id="donation" title="Make a donation">
+            <svg width="10" height="10" viewBox="-0.709 -11.555 141.732 141.732">
+              <path d="M140.314,37.654C140.314,16.858,123.402,0,102.537,0c-13.744,0-25.77,7.317-32.379,18.255C63.549,7.317,51.521,0,37.777,0 C16.912,0,0,16.858,0,37.654c0,10.821,4.588,20.57,11.922,27.438h-0.01l54.084,51.584c0.992,1.188,2.48,1.945,4.148,1.945 c1.545,0,2.936-0.653,3.92-1.696l54.346-51.833h-0.016C135.729,58.225,140.314,48.476,140.314,37.654"/>
+            </svg>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="logo"></div>
+    <div class="container">
+      <!-- -->
+      <div class="row" category="video">
+        <div class="title">
+          <span class="icon">
+            <svg width="11" height="11" viewBox="0 0 122.8799 122.8799">
+              <g transform="matrix(0.31777206,0,0,0.31777206,28.563246,45.079984)">
+                <path d="M 13.074219 26.103516 C 7.6114946 26.103516 2.9746094 30.104946 2.9746094 34.519531 L 2.9746094 88.378906 C 2.9746094 93.135096 7.755639 97.916016 12.513672 97.916016 L 75.068359 97.916016 C 78.118399 97.916016 80.010021 96.497875 81.595703 94.90625 C 83.261019 93.23461 84.326172 91.328904 84.326172 88.099609 L 84.326172 35.361328 C 84.326172 32.540497 83.315393 30.31247 81.882812 28.828125 C 80.558752 27.456271 78.20923 26.103516 75.630859 26.103516 L 13.074219 26.103516 z M 120.23242 35.080078 C 117.89746 36.315639 115.50535 37.420336 113.23242 38.740234 L 94.134766 49.097656 C 93.523849 49.411615 92.742187 49.628457 92.742188 50.509766 L 92.742188 73.230469 C 92.742188 74.480965 97.930367 76.958925 99.099609 77.533203 C 104.01723 79.948493 114.96637 86.153005 120.23242 88.939453 L 120.23242 35.080078 z" transform="matrix(3.1469098,0,0,3.1469098,-89.885958,-141.86264)"/>
+              </g>
+            </svg>
+          </span>
+          <p>Video Source</p>
+        </div>
+        <div class="section">
+          <div class="option">
+            <input type="radio" id="screen" name="video-source" value="screen">
+            <label for="screen" data-title="Desktop (screen)">Desktop</label>
+          </div>
+          <div class="option">
+            <input type="radio" id="window" name="video-source" value="window">
+            <label for="window" data-title="Browser window">Window</label>
+          </div>
+          <div class="option">
+            <input type="radio" id="tab" name="video-source" value="tab">
+            <label for="tab" data-title="Browser tab">Tab</label>
+          </div>
+        </div>
+      </div>
+      <!-- -->
+      <div class="row" category="audio">
+        <div class="title">
+          <span class="icon">
+            <svg width="11" height="11" viewBox="0 0 122.8799 122.8799">
+              <path d="M 105.19313,34.48425 104.52792,77.752635 C 101.31646,76.717014 100.26311,75.280308 95.596823,75.309858 86.784611,75.365539 79.134124,83.030995 80.011103,92.579397 81.281635,106.41235 97.389069,110.7135 105.97542,103.27827 110.84592,99.060701 111.63091,94.762282 111.62769,86.57881 111.6192,65.047202 112.52368,42.37765 112.23209,21.100045 112.07358,9.5356221 113.53489,3.832919 105.79108,5.2067065 99.628171,6.3000174 93.085035,7.2582943 86.872364,8.1308882 74.285669,9.8985471 61.603262,11.917882 48.981431,13.955292 36.176196,16.022317 35.859089,14.410312 35.91905,22.859938 36.065681,43.525911 36.379196,68.321259 35.906383,88.346396 32.862049,87.259103 31.638697,85.896651 27.310683,85.869007 18.557809,85.813223 11.068308,92.888163 11.279355,102.0732 11.558347,114.21228 25.339531,122.09313 36.131107,114.76716 38.016797,113.48711 40.118728,111.14861 41.216829,108.92836 42.689396,105.95113 42.955731,103.6207 42.980387,99.956151 43.115996,79.733753 42.303114,63.12216 42.984093,43.925872 Z"/>
+            </svg>
+          </span>
+          <p>Audio Source</p>
+        </div>
+        <div class="section">
+          <div class="option">
+            <input type="radio" id="system" name="audio-source" value="system">
+            <label for="system" data-title="i.e. audio being played from the speaker, headphone, etc.">System</label>
+          </div>
+          <div class="option">
+            <input type="radio" id="microphone" name="audio-source" value="microphone">
+            <label for="microphone" data-title="Other audio input devices">Microphone</label>
+          </div>
+          <div class="option">
+            <input type="radio" id="mixed" name="audio-source" value="mixed">
+            <label for="mixed" data-title="Include all audio sources (system + microphone)">Mixed</label>
+          </div>
+          <div class="option">
+            <input type="radio" id="noaudio" name="audio-source" value="noaudio">
+            <label for="noaudio" data-title="Recording only video">No Audio</label>
+          </div>
+        </div>
+      </div>
+      <!-- -->
+      <div class="row" category="quality">
+        <div class="title">
+          <span class="icon">
+            <svg width="11" height="11" viewBox="0 0 32 32">
+              <path d="M 0.5 0.5 L 0.5 12.492188 L 3.5 12.492188 C 3.5 13.044464 3.9477234 13.492187 4.5 13.492188 L 11.5 13.492188 C 12.052277 13.492188 12.5 13.044464 12.5 12.492188 L 15.5 12.492188 L 15.5 0.5 L 0.5 0.5 z M 2.5 2.4960938 L 13.5 2.4960938 L 13.5 10.494141 L 2.5 10.494141 L 2.5 2.4960938 z M 2.5 14.5 C 2.223877 14.5 2 14.723877 2 15 C 2 15.276123 2.223877 15.5 2.5 15.5 L 13.5 15.5 C 13.776123 15.5 14 15.276123 14 15 C 14 14.723877 13.776123 14.5 13.5 14.5 L 2.5 14.5 z" transform="scale(2)"/>
+            </svg>
+          </span>
+          <p>Video Quality</p>
+        </div>
+        <div class="section">
+          <div class="option">
+            <input type="radio" id="low" name="quality" value="low">
+            <label for="low" data-title="Low video quality (25% screen width)">Low</label>
+          </div>
+          <div class="option">
+            <input type="radio" id="medium" name="quality" value="medium">
+            <label for="medium" data-title="Medium video quality (50% screen width)">Medium</label>
+          </div>
+          <div class="option">
+            <input type="radio" id="default" name="quality" value="default">
+            <label for="default" data-title="Default video quality (100% screen width)">Default</label>
+          </div>
+          <div class="option">
+            <input type="radio" id="high" name="quality" value="high">
+            <label for="high" data-title="High video quality (200% screen width)">High</label>
+          </div>
+        </div>
+      </div>
+      <!-- -->
+      <div class="row" category="settings">
+        <div class="title">
+          <span class="icon">
+            <svg width="11" height="11" viewBox="0 0 20 20">
+              <g transform="translate(-464.000000, -380.000000)">
+                <g transform="translate(464.000000, 380.000000)">
+                  <path d="M17.4,11 C17.4,10.7 17.5,10.4 17.5,10 C17.5,9.6 17.5,9.3 17.4,9 L19.5,7.3 C19.7,7.1 19.7,6.9 19.6,6.7 L17.6,3.2 C17.5,3.1 17.3,3 17,3.1 L14.5,4.1 C14,3.7 13.4,3.4 12.8,3.1 L12.4,0.5 C12.5,0.2 12.2,0 12,0 L8,0 C7.8,0 7.5,0.2 7.5,0.4 L7.1,3.1 C6.5,3.3 6,3.7 5.4,4.1 L3,3.1 C2.7,3 2.5,3.1 2.3,3.3 L0.3,6.8 C0.2,6.9 0.3,7.2 0.5,7.4 L2.6,9 C2.6,9.3 2.5,9.6 2.5,10 C2.5,10.4 2.5,10.7 2.6,11 L0.5,12.7 C0.3,12.9 0.3,13.1 0.4,13.3 L2.4,16.8 C2.5,16.9 2.7,17 3,16.9 L5.5,15.9 C6,16.3 6.6,16.6 7.2,16.9 L7.6,19.5 C7.6,19.7 7.8,19.9 8.1,19.9 L12.1,19.9 C12.3,19.9 12.6,19.7 12.6,19.5 L13,16.9 C13.6,16.6 14.2,16.3 14.7,15.9 L17.2,16.9 C17.4,17 17.7,16.9 17.8,16.7 L19.8,13.2 C19.9,13 19.9,12.7 19.7,12.6 L17.4,11 L17.4,11 Z M10,13.5 C8.1,13.5 6.5,11.9 6.5,10 C6.5,8.1 8.1,6.5 10,6.5 C11.9,6.5 13.5,8.1 13.5,10 C13.5,11.9 11.9,13.5 10,13.5 L10,13.5 Z"/>
+                </g>
+              </g>
+            </svg>
+          </span>
+          <p>Settings</p>
+        </div>
+        <div class="section">
+          <div class="option">
+            <input type="checkbox" id="minimize">
+            <label for="minimize" data-title="When recording the screen, minimize the interface.">Minimize</label>
+          </div>
+        </div>
+      </div>
+      <!-- -->
+      <div class="footer">
+        <div class="info">
+          <div class="status"></div>
+          <div class="elapsed"></div>
+        </div>
+        <div class="start">START</div>
+      </div>
+    </div>
+    <!-- -->
+    <script type="text/javascript" src="index.js"></script>
+    <script type="text/javascript" src="vendor/file.js"></script>
+    <script type="text/javascript" src="resources/recorder.js"></script>
+  </body>
+</html>

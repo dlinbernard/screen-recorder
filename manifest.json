@@ -1,0 +1,40 @@
+{
+  "version": "0.1.4",
+  "manifest_version": 2,
+  "offline_enabled": true,
+  "name": "Screen Recorder",
+  "short_name": "screen-recorder",
+  "homepage_url": "https://mybrowseraddon.com/screen-recorder.html",
+  "description": "Record your computer's screen with just one click!",
+  "permissions": [
+    "storage",
+    "downloads",
+    "desktopCapture",
+    "unlimitedStorage"
+  ],
+  "background": {
+    "persistent": false,
+    "scripts": [
+      "lib/config.js", 
+      "lib/chrome.js",
+      "lib/runtime.js",
+      "lib/common.js"
+    ]
+  },
+  "browser_action": {
+    "default_title": "Screen Recorder",
+    "default_icon": {
+      "16": "data/icons/16.png",
+      "32": "data/icons/32.png",
+      "48": "data/icons/48.png",
+      "64": "data/icons/64.png"
+    }
+  },
+  "icons": {
+    "16": "data/icons/16.png",
+    "32": "data/icons/32.png",
+    "48": "data/icons/48.png",
+    "64": "data/icons/64.png",
+    "128": "data/icons/128.png"
+  }
+}
