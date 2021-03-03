@@ -292,6 +292,14 @@ input[type='radio'], input[type='checkbox'] {
   background-color: rgba(0,0,0,0.05);
 }
 
+@-moz-document url-prefix() {
+  .status, .elapsed {
+    font-size: 11px;
+    font-weight: normal;
+    font-family: monaco, "andale mono", "lucida console", "courier new", monospace;
+  }
+}
+
 @keyframes blink {
   0% {background-image: url('../icons/OFF/84.png')}
   49% {background-image: url('../icons/OFF/84.png')}
@@ -301,43 +309,36 @@ input[type='radio'], input[type='checkbox'] {
 
 @media (max-width: 600px) {
   .row {
-    padding: 5px;
     width: calc(100% - 10px);
   }
   .option {
-    width: 90px;
-    margin: 5px;
-  }
-}
-
-@media (max-width: 500px) {
-  .row {
-    padding: 5px;
-    width: calc(100% - 10px);
-  }
-  .option {
-    width: 70px;
-    margin: 5px;
+    width: 100px;
   }
   .option input {
     margin-left: 5px;
   }
 }
 
-@media (max-width: 400px) {
+@media (max-width: 500px) {
+  .container {
+    height: calc(100vh - 235px);
+  } 
   .row {
     padding: 5px;
     width: calc(100% - 10px);
+  }
+  .start {
+    padding: 20px;
   }
   .title {
     margin-bottom: 5px;
   }
   .option {
     margin: 5px;
-    height: 42px;
+    height: 48px;
     text-align: left;
     text-indent: 20px;
-    line-height: 42px;
+    line-height: 48px;
     width: calc(100% - 20px);
   }
   .option input {
