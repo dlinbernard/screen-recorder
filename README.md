@@ -8,8 +8,8 @@ Chrome: https://chrome.google.com/webstore/detail/screen-recorder/dhopldobnfjeck
 Edge: https://microsoftedge.microsoft.com/addons/detail/djfjdgikejimolefbnodankpinpcdcej  
 Firefox:  
 Opera: https://addons.opera.com/en/extensions/details/screen-recorder/  
+Webapp & PWA: https://webbrowsertools.com/screen-recorder/  
 
 -----------------------
 
-Webapp & PWA: https://webbrowsertools.com/screen-recorder/  
 Support & FAQ: https://mybrowseraddon.com/screen-recorder.html  
