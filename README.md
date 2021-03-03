@@ -4,7 +4,8 @@ To work with this addon, please click on the toolbar button. Once the recorder i
 
 By default, recorded media is in - webm - format. To get more information about webm video format, please visit this Wikipedia page (https://en.wikipedia.org/wiki/WebM). If you want to change this format to a different one, please use a different software.
 
-You can install this app as a PWA on your mobile device, moreover, it is available as a browser extension as-well-as a web application:
+You can install this app as a PWA on your mobile device, moreover, it is available as a browser extension as-well-as a web application:  
+
 Chrome: https://chrome.google.com/webstore/detail/screen-recorder/dhopldobnfjeckokfjimfcdagmlhjdce  
 Edge: https://microsoftedge.microsoft.com/addons/detail/djfjdgikejimolefbnodankpinpcdcej  
 Firefox: 
