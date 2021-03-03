@@ -160,6 +160,7 @@ config.recorder = {
       var stack = null;
       if ("databases" in indexedDB) {
         stack = await indexedDB.databases();
+        stack = (stack || []).filter(o => o.name && o.name.startsWith("file:"));
       } else {
         stack = Object.keys(localStorage).filter(e => e.startsWith("file:")).map(e => ({
           "name": e.replace("file:", '')
