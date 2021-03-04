@@ -6,7 +6,7 @@ By default, recorded media is in - webm - format. To get more information about 
 
 Chrome: https://chrome.google.com/webstore/detail/screen-recorder/dhopldobnfjeckokfjimfcdagmlhjdce  
 Edge: https://microsoftedge.microsoft.com/addons/detail/djfjdgikejimolefbnodankpinpcdcej  
-Firefox:  
+Firefox: https://addons.mozilla.org/en-US/firefox/addon/screen-recorder/  
 Opera: https://addons.opera.com/en/extensions/details/screen-recorder/  
 Webapp & PWA: https://webbrowsertools.com/screen-recorder/  
 
