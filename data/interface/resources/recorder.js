@@ -1,4 +1,5 @@
 config.recorder = {
+  "final": {},
   "engine": null,
   "stream": null,
   "switch": true,
@@ -28,34 +29,6 @@ config.recorder = {
     if (config.recorder.file.capture.id) window.clearTimeout(config.recorder.file.capture.id);
     config.recorder.file.capture.id = window.setTimeout(config.recorder.loop, config.recorder.timestep);
   },
-  "stop": async function () {
-    config.button.icon(null);
-    config.recorder.switch = true;
-    config.element.status.textContent = '';
-    config.element.elapsed.textContent = '';
-    config.element.start.textContent = "START";
-    config.element.logo.removeAttribute("blink");
-    /*  */
-    if (config.options.inteface.minimize) background.send("state", "normal");
-    if (config.recorder.interval.status) window.clearInterval(config.recorder.interval.status);
-    if (config.recorder.interval.button) window.clearInterval(config.recorder.interval.button);
-    /*  */
-    var tracks = config.recorder.stream ? config.recorder.stream.getTracks() : [];
-    var recording = config.recorder.engine && config.recorder.engine.state !== "inactive";
-    /*  */
-    for (var i = 0; i < tracks.length; i++) {
-      tracks[i].stop();
-    }
-    /*  */
-    if (recording) {
-      config.recorder.engine.stop();
-    }
-    /*  */
-    if (config.recorder.context) {
-      await config.recorder.context.close();
-      delete config.recorder.context;
-    }
-  },
   "load": function (constraints) {
     if (navigator) {
       if (navigator.mediaDevices) {
@@ -81,6 +54,40 @@ config.recorder = {
       }
     } else {
       config.notifications.create("Error! 'navigator' is not available on your machine!");
+    }
+  },
+  "stop": async function () {
+    var tracks = {};
+    config.button.icon(null);
+    config.recorder.switch = true;
+    config.element.status.textContent = '';
+    config.element.elapsed.textContent = '';
+    config.element.start.textContent = "START";
+    config.element.logo.removeAttribute("blink");
+    /*  */
+    if (config.options.inteface.minimize) background.send("state", "normal");
+    if (config.recorder.interval.status) window.clearInterval(config.recorder.interval.status);
+    if (config.recorder.interval.button) window.clearInterval(config.recorder.interval.button);
+    /*  */
+    tracks.a = config.recorder.stream ? config.recorder.stream.getTracks() : [];
+    tracks.b = config.recorder.desktop ? config.recorder.desktop.getTracks() : [];
+    tracks.c = config.recorder.microphone ? config.recorder.microphone.getTracks() : [];
+    tracks.total = [...tracks.a, ...tracks.b, ...tracks.c];
+    /*  */
+    for (var i = 0; i < tracks.total.length; i++) {
+      if (tracks.total[i]) {
+        tracks.total[i].stop();
+      }
+    }
+    /*  */
+    var recording = config.recorder.engine && config.recorder.engine.state !== "inactive";
+    if (recording) {
+      config.recorder.engine.stop();
+    }
+    /*  */
+    if (config.recorder.context) {
+      await config.recorder.context.close();
+      delete config.recorder.context;
     }
   },
   "blink": {
@@ -124,38 +131,6 @@ config.recorder = {
       var filename = "screen-recorder-" + date.replace(/ /g, '-').replace(/:/g, '-') + ".webm";
       return filename;
     },
-    "download": function () {
-      var inactive = config.recorder.engine && config.recorder.engine.state === "inactive";
-      if (inactive && config.recorder.file.capture.progress === 0) {
-        config.element.status.textContent = "Processing the video, please wait...";
-        /*  */
-        window.setTimeout(function () {
-          if (config.recorder.file.capture.id) {
-            window.clearTimeout(config.recorder.file.capture.id);
-          }
-          /*  */
-          config.recorder.file.data.download({
-            "offsets": [],
-            "mime": "video/webm",
-            "filename": config.recorder.file.name()
-          }).then(function (e) {
-            if (e.state === "complete") {
-              window.setTimeout(function () {
-                config.element.status.textContent = '';
-                config.recorder.file.disk.id = e.id;
-                config.recorder.file.data.remove();
-                delete config.recorder.stream;
-                delete config.recorder.engine;
-              }, 300);
-            } else {
-              config.notifications.create("Error! could not write the result to disk!");
-            }
-          }).catch(function (e) {
-            config.notifications.create("Error! could not write the result to disk!");
-          });
-        }, 300);
-      }
-    },
     "restore": async function () {
       var stack = null;
       if ("databases" in indexedDB) {
@@ -183,46 +158,84 @@ config.recorder = {
         /*  */
         file.remove();
       }
+    },
+    "download": function () {
+      var inactive = config.recorder.engine && config.recorder.engine.state === "inactive";
+      if (inactive && config.recorder.file.capture.progress === 0) {
+        config.element.status.textContent = "Processing the video, please wait...";
+        /*  */
+        window.setTimeout(function () {
+          if (config.recorder.file.capture.id) {
+            window.clearTimeout(config.recorder.file.capture.id);
+          }
+          /*  */
+          config.recorder.file.data.download({
+            "offsets": [],
+            "mime": "video/webm",
+            "filename": config.recorder.file.name()
+          }).then(function (e) {
+            if (e.state === "complete") {
+              window.setTimeout(function () {
+                config.element.status.textContent = '';
+                config.recorder.file.disk.id = e.id;
+                config.recorder.file.data.remove();
+                /*  */
+                delete config.recorder.engine;
+                delete config.recorder.stream;
+                delete config.recorder.desktop;
+                delete config.recorder.microphone;
+              }, 300);
+            } else {
+              config.notifications.create("Error! could not write the result to disk!");
+            }
+          }).catch(function (e) {
+            config.notifications.create("Error! could not write the result to disk!");
+          });
+        }, 300);
+      }
     }
   },
   "finalize": function (microphone, desktop) {
+    config.recorder.desktop = desktop;
     config.recorder.file.data = new File();
+    config.recorder.microphone = microphone;
     config.recorder.stream = new MediaStream();
     /*  */
-    var audio = null;
-    var video = desktop.getVideoTracks()[0];
+    config.recorder.final.audio = null;
+    config.recorder.final.video = config.recorder.desktop.getVideoTracks()[0];
     /*  */
-    if (microphone) {
+    if (config.recorder.microphone) {
       if (config.options.audio.source.name === "microphone") {
-        audio = microphone.getAudioTracks()[0];
+        config.recorder.final.audio = config.recorder.microphone.getAudioTracks()[0];
       }
       /*  */
       if (config.options.audio.source.name === "mixed") {
         var sources = [];
-        var audio_1 = desktop.getAudioTracks()[0];
-        var audio_2 = microphone.getAudioTracks()[0];
+        var audio_1 = config.recorder.desktop.getAudioTracks()[0];
+        var audio_2 = config.recorder.microphone.getAudioTracks()[0];
         /*  */
         sources.push(config.recorder.context.createMediaStreamSource(new MediaStream([audio_1])));
         sources.push(config.recorder.context.createMediaStreamSource(new MediaStream([audio_2])));
         var destination = config.recorder.context.createMediaStreamDestination();
         sources.forEach(function (source) {source.connect(destination)});
-        audio = destination.stream.getAudioTracks()[0];
+        config.recorder.final.audio = destination.stream.getAudioTracks()[0];
       }
       /*  */
-      if (video && audio) {
-        config.recorder.stream.addTrack(video);
-        config.recorder.stream.addTrack(audio);
+      if (config.recorder.final.video && config.recorder.final.audio) {
+        config.recorder.stream.addTrack(config.recorder.final.video);
+        config.recorder.stream.addTrack(config.recorder.final.audio);
       }
     } else {
       if (config.options.audio.source.name === "noaudio") {
-        config.recorder.stream.addTrack(video);
-      } else { /* system */
-        config.recorder.stream = desktop;
+        config.recorder.stream.addTrack(config.recorder.final.video);
+      } else {
+        config.recorder.stream = config.recorder.desktop;
       }
     }
     /*  */
     config.recorder.stream.onstop = config.recorder.stop;
     config.recorder.stream.oninactive = config.recorder.stop;
+    config.recorder.final.video.onended = config.recorder.stop;
     config.recorder.stream.onremovetrack = config.recorder.stop;
     /*  */
     config.recorder.file.data.open().then(function () {
@@ -345,17 +358,13 @@ config.recorder = {
               if (shareaudio) constraints["audio"] = config.recorder.audio;
               /*  */
               if (config.options.audio.source.name === "mixed" || config.options.audio.source.name === "microphone") {
-                if ("permissions" in navigator) {
-                  navigator.permissions.query({"name": "microphone"}).then(function (e) {
-                    if (e.state === "prompt" || e.state === "granted") {
-                      config.recorder.load(constraints);
-                    } else {
-                      config.notifications.create("Error! microphone permission is denied!");
-                    }
-                  });
-                } else {
-                  config.notifications.create("Error! 'permissions' is not available!");
-                }
+                config.permissions.query({"name": "microphone"}).then(function (e) {
+                  if (e.state === "prompt" || e.state === "granted" || e.state === "unsupported") {
+                    config.recorder.load(constraints);
+                  } else {
+                    config.notifications.create("Error! microphone permission is denied!");
+                  }
+                });
               } else {
                 config.recorder.load(constraints);
               }

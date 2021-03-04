@@ -43,6 +43,18 @@ var config = {
       "webapp": "https://webbrowsertools.com/screen-recorder/"
     }
   },
+  "resize": {
+    "timeout": null,
+    "method": function () {
+      if (config.resize.timeout) window.clearTimeout(config.resize.timeout);
+      config.resize.timeout = window.setTimeout(function () {
+        config.storage.write("size", {
+          "width": window.innerWidth || window.outerWidth,
+          "height": window.innerHeight || window.outerHeight
+        });
+      }, 1000);
+    }
+  },
   "convert": {
     "seconds": {
       "to": {
@@ -61,16 +73,29 @@ var config = {
       }
     }
   },
-  "resize": {
-    "timeout": null,
-    "method": function () {
-      if (config.resize.timeout) window.clearTimeout(config.resize.timeout);
-      config.resize.timeout = window.setTimeout(function () {
-        config.storage.write("size", {
-          "width": window.innerWidth || window.outerWidth,
-          "height": window.innerHeight || window.outerHeight
-        });
-      }, 1000);
+  "permissions": {
+    "query": async function (options) {
+      return await new Promise(function (resolve, reject) {
+        var firefox = navigator.userAgent.toLowerCase().indexOf("firefox");
+        if (firefox) {
+          resolve({"state": "unsupported"});
+        } else {
+          try {
+            if ("permissions" in navigator) {
+              navigator.permissions.query(options).then(resolve).catch(function (e) {
+                resolve({"state": undefined});
+                config.notifications.create("Error! could not query required permissions!");
+              });
+            } else {
+              resolve({"state": undefined});
+              config.notifications.create("Error! 'permissions' is not available!");
+            }
+          } catch (e) {
+            resolve({"state": undefined});
+            config.notifications.create("Error! 'permissions' is not available!");
+          }
+        }
+      });
     }
   },
   "options": {
@@ -174,108 +199,104 @@ var config = {
       config.button.icon(null);
       config.recorder.file.restore();
       /*  */
-      if ("permissions" in navigator) {
-        var permission = await navigator.permissions.query({"name": "microphone"});
-        if (permission.state === "prompt") {
-          if (config.options.audio.source.name === "mixed" || config.options.audio.source.name === "microphone") {
-            config.options.audio.source.id = null;
-            config.options.audio.source.name = "system";
-          }
+      var permission = await config.permissions.query({"name": "microphone"});
+      if (permission.state === "prompt") {
+        if (config.options.audio.source.name === "mixed" || config.options.audio.source.name === "microphone") {
+          config.options.audio.source.id = null;
+          config.options.audio.source.name = "system";
         }
-        /*  */
-        var minimize = document.querySelector("input[id='minimize']");
-        var context = document.documentElement.getAttribute("context");
-        var quality = document.querySelector("input[id='" + config.options.quality.name + "']");
-        var video = document.querySelector("input[id='" + config.options.video.source.name + "']");
-        var audio = document.querySelector("input[id='" + config.options.audio.source.name + "']");
-        /*  */
-        if (video) video.checked = true;
-        if (audio) audio.checked = true;
-        if (quality) quality.checked = true;
-        if (minimize) minimize.checked = config.options.inteface.minimize;
-        config.recorder.api.version = chrome && chrome.desktopCapture && chrome.desktopCapture.chooseDesktopMedia ? "old" : "new";
-        /*  */
-        minimize.addEventListener("change", function (e) {
-          config.options.inteface.minimize = e.target.checked;
-        });
-        /*  */
-        window.setTimeout(function () {
-          config.element.logo.removeAttribute("init");
-          config.element.status.textContent = "Screen recorder is ready.";
-        }, 1500);
-        /*  */
-        if (context === "webapp") {
-          document.querySelector(".row[category='settings']").setAttribute("disabled", '');
-        } else {
-          document.querySelector(".row[category='settings']").removeAttribute("disabled");
-        }
-        /*  */
-        if (config.recorder.api.version === "new") {
-          document.querySelector(".row[category='video']").setAttribute("disabled", '');
-          document.querySelector(".row[category='audio']").setAttribute("disabled", '');
-          config.element.status.textContent = "API >> navigator -> mediaDevices -> getDisplayMedia";
-        } else {
-          document.querySelector(".row[category='video']").removeAttribute("disabled");
-          document.querySelector(".row[category='audio']").removeAttribute("disabled");
-          config.element.status.textContent = "API >> chrome -> desktopCapture -> chooseDesktopMedia";
-        }
-        /*  */
-        config.downloads.on.changed(function (e) {
-          if (e) {
-            if (e.id === config.recorder.file.disk.id) {
-              config.downloads.search({"id": e.id}, function (arr) {
-                if (arr && arr.length) {
-                  if (arr[0].state) {
-                    if (arr[0].state === "complete") {
-                      var filename = arr[0].filename ? ' to: \n\n' + arr[0].filename : '.';
-                      config.notifications.create("The recorded screen is downloaded" + filename);
-                    }
-                  }
-                }
-              });
-            }
-          }
-        });
-        /*  */
-        var inputs = [...document.querySelectorAll("input[type='radio']")];
-        if (inputs && inputs.length) {
-          for (var i = 0; i < inputs.length; i++) {
-            inputs[i].addEventListener("change", function (e) {
-              if (e) {
-                if (e.target) {
-                  var name = e.target.name;
-                  var value = e.target.value;
-                  /*  */
-                  if (name) {
-                    if (value) {
-                      if (name === "quality") {
-                        config.options.quality.name = value;
-                      }
-                      /*  */
-                      if (name === "video-source") {
-                        config.options.video.source.name = value;
-                      }
-                      /*  */
-                      if (name === "audio-source") {
-                        if (value === "mixed" || value === "microphone") {
-                          navigator.mediaDevices.getUserMedia({"video": false, "audio": true}).then(function (stream) {                      
-                            config.options.audio.source.name = value;
-                            config.options.audio.source.id = stream.id;
-                          });
-                        } else {
-                          config.options.audio.source.id = null;
-                          config.options.audio.source.name = value;
-                        }
-                      }
-                    }
+      }
+      /*  */
+      var minimize = document.querySelector("input[id='minimize']");
+      var context = document.documentElement.getAttribute("context");
+      var quality = document.querySelector("input[id='" + config.options.quality.name + "']");
+      var video = document.querySelector("input[id='" + config.options.video.source.name + "']");
+      var audio = document.querySelector("input[id='" + config.options.audio.source.name + "']");
+      /*  */
+      if (video) video.checked = true;
+      if (audio) audio.checked = true;
+      if (quality) quality.checked = true;
+      if (minimize) minimize.checked = config.options.inteface.minimize;
+      config.recorder.api.version = chrome && chrome.desktopCapture && chrome.desktopCapture.chooseDesktopMedia ? "old" : "new";
+      /*  */
+      minimize.addEventListener("change", function (e) {
+        config.options.inteface.minimize = e.target.checked;
+      });
+      /*  */
+      window.setTimeout(function () {
+        config.element.logo.removeAttribute("init");
+        config.element.status.textContent = "Screen recorder is ready.";
+      }, 1500);
+      /*  */
+      if (context === "webapp") {
+        document.querySelector(".row[category='settings']").setAttribute("disabled", '');
+      } else {
+        document.querySelector(".row[category='settings']").removeAttribute("disabled");
+      }
+      /*  */
+      if (config.recorder.api.version === "new") {
+        document.querySelector(".row[category='video']").setAttribute("disabled", '');
+        document.querySelector(".row[category='audio']").setAttribute("disabled", '');
+        config.element.status.textContent = "API >> navigator -> mediaDevices -> getDisplayMedia";
+      } else {
+        document.querySelector(".row[category='video']").removeAttribute("disabled");
+        document.querySelector(".row[category='audio']").removeAttribute("disabled");
+        config.element.status.textContent = "API >> chrome -> desktopCapture -> chooseDesktopMedia";
+      }
+      /*  */
+      config.downloads.on.changed(function (e) {
+        if (e) {
+          if (e.id === config.recorder.file.disk.id) {
+            config.downloads.search({"id": e.id}, function (arr) {
+              if (arr && arr.length) {
+                if (arr[0].state) {
+                  if (arr[0].state === "complete") {
+                    var filename = arr[0].filename ? ' to: \n\n' + arr[0].filename : '.';
+                    config.notifications.create("The recorded screen is downloaded" + filename);
                   }
                 }
               }
             });
           }
         }
-      } else {
-        config.notifications.create("Error! 'permissions' is not available!");
+      });
+      /*  */
+      var inputs = [...document.querySelectorAll("input[type='radio']")];
+      if (inputs && inputs.length) {
+        for (var i = 0; i < inputs.length; i++) {
+          inputs[i].addEventListener("change", function (e) {
+            if (e) {
+              if (e.target) {
+                var name = e.target.name;
+                var value = e.target.value;
+                /*  */
+                if (name) {
+                  if (value) {
+                    if (name === "quality") {
+                      config.options.quality.name = value;
+                    }
+                    /*  */
+                    if (name === "video-source") {
+                      config.options.video.source.name = value;
+                    }
+                    /*  */
+                    if (name === "audio-source") {
+                      if (value === "mixed" || value === "microphone") {
+                        navigator.mediaDevices.getUserMedia({"video": false, "audio": true}).then(function (stream) {                      
+                          config.options.audio.source.name = value;
+                          config.options.audio.source.id = stream.id;
+                        });
+                      } else {
+                        config.options.audio.source.id = null;
+                        config.options.audio.source.name = value;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          });
+        }
       }
     }
   },
@@ -365,7 +386,9 @@ var config = {
 
 background.receive("button", function () {
   var state = config.element.start.textContent;
-  if (state === "STOP") config.element.start.click();
+  if (state === "STOP") {
+    config.element.start.click();
+  }
 });
 
 window.addEventListener("load", config.load, false);
