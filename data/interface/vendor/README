@@ -1,3 +1,4 @@
 This add-on uses the following open-source JavaScript libraries:
 
 file.js: https://github.com/inbasic/turbo-download-manager-v2/blob/master/v3/downloads/file.js
+fix-webm-duration.js: https://github.com/yusitnikov/fix-webm-duration/blob/master/fix-webm-duration.js

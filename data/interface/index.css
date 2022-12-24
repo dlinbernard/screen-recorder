@@ -1,8 +1,17 @@
+html {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
 body {
   border: 0;
   margin: 0;
   padding: 0;
   width: 100%;
+  height: 100%;
   font-size: 12px;
   overflow: hidden;
   background-color: #fff;
@@ -28,18 +37,26 @@ input, label, table tr td {
 }
 
 label {
+  flex: 1;
   margin: 0;
   border: 0;
   padding: 0;
+  width: auto;
+  height: 42px;
   cursor: pointer;
+  font-weight: 600;
+  line-height: 42px;
   user-select: none;
+  text-align: center;
+  letter-spacing: 1px;
+  display: inline-block;
   vertical-align: middle;
 }
 
 input[type='radio'], input[type='checkbox'] {
-  margin: 5px;
-  margin-left: -10px;
-  vertical-align: middle;
+  margin-top: 13px;
+  margin: auto 10px;
+  vertical-align: bottom;
 }
 
 .container {
@@ -84,10 +101,10 @@ input[type='radio'], input[type='checkbox'] {
 }
 
 .row {
-  padding: 5px;
+  width: 100%;
   margin: 0 auto;
-  margin-bottom: 5px;
-  width: calc(100% - 40px);
+  padding: 0 10px;
+  box-sizing: border-box;
 }
 
 .row[disabled] .title {
@@ -106,18 +123,23 @@ input[type='radio'], input[type='checkbox'] {
 }
 
 .option {
-  height: 38px;
-  width: 110px;
-  margin: 0 2px;
-  padding: 0 5px;
+  padding: 0;
+  margin: 5px;
+  height: 42px;
+  width: 150px;
+  display: flex;
+  flex-flow: row;
   cursor: pointer;
   overflow: hidden;
   user-select: none;
-  line-height: 38px;
+  line-height: 42px;
   text-align: center;
+  align-items: center;
   white-space: nowrap;
+  box-sizing: border-box;
   text-overflow: ellipsis;
-  border: solid 1px rgba(0,0,0,0.05);
+  justify-content: center;
+  border: solid 1px rgba(0,0,0,0.1);
   background-color: rgba(0,0,0,0.01);
   transition: 300ms ease background-color;
 }
@@ -143,7 +165,7 @@ input[type='radio'], input[type='checkbox'] {
   margin: 0;
   padding: 0;
   color: #808080;
-  font-size: 10px;
+  font-size: 11px;
   overflow: hidden;
   font-weight: 600;
   white-space: nowrap;
@@ -200,14 +222,18 @@ input[type='radio'], input[type='checkbox'] {
 }
 
 .start {
+  padding: 0;
   color: #fff;
-  padding: 15px;
+  width: 100%;
+  height: 42px;
   cursor: pointer;
-  margin-top: 5px;
+  font-weight: 600;
+  margin-top: 10px;
+  line-height: 42px;
   user-select: none;
   text-align: center;
   letter-spacing: 1px;
-  width: calc(100% - 30px);
+  box-sizing: border-box;
   background-color: #ed5646;
   transition: 300ms ease all;
 }
@@ -235,6 +261,7 @@ input[type='radio'], input[type='checkbox'] {
   font-size: 12px;
   padding: 0 10px;
   overflow: hidden;
+  font-weight: 600;
   text-align: right;
   line-height: 44px;
   white-space: nowrap;
@@ -247,6 +274,7 @@ input[type='radio'], input[type='checkbox'] {
 .status {
   float: left;
   text-align: left;
+  user-select: none;
 }
 
 .elapsed {
@@ -311,12 +339,6 @@ input[type='radio'], input[type='checkbox'] {
   .row {
     width: calc(100% - 10px);
   }
-  .option {
-    width: 100px;
-  }
-  .option input {
-    margin-left: 5px;
-  }
 }
 
 @media (max-width: 500px) {
@@ -324,8 +346,8 @@ input[type='radio'], input[type='checkbox'] {
     height: calc(100vh - 235px);
   } 
   .row {
-    padding: 5px;
-    width: calc(100% - 10px);
+    padding: 0;
+    width: calc(100% - 20px);
   }
   .start {
     padding: 20px;
@@ -334,15 +356,9 @@ input[type='radio'], input[type='checkbox'] {
     margin-bottom: 5px;
   }
   .option {
-    margin: 5px;
+    width: 100%;
     height: 48px;
-    text-align: left;
-    text-indent: 20px;
     line-height: 48px;
-    width: calc(100% - 20px);
-  }
-  .option input {
-    margin-left: -15px;
   }
 }
 

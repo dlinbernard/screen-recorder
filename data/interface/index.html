@@ -161,9 +161,21 @@
         </div>
         <div class="section">
           <div class="option">
-            <input type="checkbox" id="minimize">
+            <input type="checkbox" id="streamwrite" title="Write the video stream to disk as it is recording (requires the new file system API).">
+            <label for="streamwrite" data-title="Write the video stream to disk as it is recording.">Stream Write</label>
+          </div>
+          <div class="option">
+            <input type="checkbox" id="seekable" title="Make the resulting webm file seekable.">
+            <label for="seekable" data-title="Make the resulting webm file seekable.">Seekable Webm</label>
+          </div>
+          <div class="option">
+            <input type="checkbox" id="minimize" title="When recording the screen, minimize the interface.">
             <label for="minimize" data-title="When recording the screen, minimize the interface.">Minimize</label>
           </div>
+          <div class="option">
+            <input type="checkbox" id="mute" title="When recording the screen, mute the system audio.">
+            <label for="mute" data-title="When recording the screen, mute the system audio.">Mute</label>
+          </div>          
         </div>
       </div>
       <!-- -->
@@ -176,8 +188,10 @@
       </div>
     </div>
     <!-- -->
-    <script type="text/javascript" src="index.js"></script>
     <script type="text/javascript" src="vendor/file.js"></script>
+    <script type="text/javascript" src="vendor/fix-webm-duration.js"></script>
+    <!-- -->
+    <script type="text/javascript" src="index.js"></script>
     <script type="text/javascript" src="resources/recorder.js"></script>
   </body>
 </html>
