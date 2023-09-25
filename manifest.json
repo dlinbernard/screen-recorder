@@ -1,10 +1,13 @@
 {
-  "version": "0.1.9",
+  "version": "0.2.0",
   "manifest_version": 3,
   "offline_enabled": true,
-  "name": "Desktop Screen Recorder",
+  "name": "Screen Recorder",
   "homepage_url": "https://mybrowseraddon.com/screen-recorder.html",
   "description": "Record your computer's screen with just one click!",
+  "commands": {
+    "_execute_action": {}
+  },
   "background": {
     "service_worker": "background.js"
   },

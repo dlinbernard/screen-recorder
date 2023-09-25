@@ -70,6 +70,12 @@ var config = {
       window.alert(message);
     }
   },
+  "action": function () {
+    let state = config.element.start.textContent;
+    if (state === "STOP") {
+      config.element.start.click();
+    }
+  },
   "beforeunload": function (e) {
     if (config.options.inteface.streamwrite) {
       if (config.recorder.engine && config.recorder.engine.state === "recording") {
@@ -85,6 +91,19 @@ var config = {
       "edit": "https://mybrowseraddon.com/page-edit.html",
       "draw": "https://mybrowseraddon.com/draw-on-page.html",
       "webapp": "https://webbrowsertools.com/screen-recorder/"
+    }
+  },
+  "update": {
+    "interface": function () {
+      config.element.filepath.setAttribute("streamwrite", config.options.inteface.streamwrite);
+      /*  */
+      if (config.options.inteface.streamwrite === false) {
+        config.element.filepath.setAttribute("title", "Write a file name for the final recording.");
+        config.element.filepath.setAttribute("placeholder", "Write a file name for the final recording, i.e. sample.webm");
+      } else {
+        config.element.filepath.setAttribute("placeholder", "Write a file name for the final recording, i.e. sample.webm");
+        config.element.filepath.setAttribute("title", "Write a file name and choose a folder to save the final recording.");
+      }
     }
   },
   "button": {
@@ -187,31 +206,6 @@ var config = {
       }
     }
   },
-  "downloads": {
-    "start": function (options, callback) {
-      if (chrome.downloads) {
-        chrome.downloads.download(options, function (e) {
-          if (callback) callback(e);
-        });
-      }
-    },
-    "search": function (options, callback) {
-      if (chrome.downloads) {
-        chrome.downloads.search(options, function (e) {
-          if (callback) callback(e);
-        });
-      }
-    },
-    "on": {
-      "changed": function (callback) {
-        if (chrome.downloads) {
-          chrome.downloads.onChanged.addListener(function (e) {
-            callback(e);
-          });
-        }
-      }
-    }
-  },
   "options": {
     "inteface": {
       set minimize (val) {config.storage.write("inteface-minimize", val)},
@@ -287,7 +281,7 @@ var config = {
             }
           });
         }
-      },      
+      },
       "request": function (callback) {
         const context = document.documentElement.getAttribute("context");
         /*  */
@@ -316,6 +310,96 @@ var config = {
       }
     }
   },
+  "downloads": {
+    "start": function (options, callback) {
+      if (chrome.downloads) {
+        chrome.downloads.download(options, function (e) {
+          if (callback) callback(e);
+        });
+      }
+    },
+    "search": function (options, callback) {
+      if (chrome.downloads) {
+        chrome.downloads.search(options, function (e) {
+          if (callback) callback(e);
+        });
+      }
+    },
+    "on": {
+      "changed": function (callback) {
+        if (chrome.downloads) {
+          chrome.downloads.onChanged.addListener(function (e) {
+            callback(e);
+          });
+        }
+      }
+    },
+    "path": {
+      "write": async function () {
+        config.recorder.fileio.ready = false;
+        /*  */
+        if (config.options.inteface.streamwrite === false) {
+          try {
+            const webm = config.element.filepath.value.endsWith(".webm");
+            /*  */
+            if (webm) {
+              config.recorder.fileio.ready = true;
+              config.recorder.fileio.old.data = new File();
+              await config.recorder.fileio.old.data.open();
+              config.element.filepath.removeAttribute("required");
+            } else {
+              await config.recorder.stop();
+              config.notifications.create("Recording canceled! please write a file name that ends with '.webm' and try again.");
+            }
+          } catch (e) {
+            await config.recorder.stop();
+            config.notifications.create("Recording canceled! please choose a destination folder and try again.");
+          }
+        }
+      },
+      "choose": async function () {
+        config.recorder.fileio.ready = false;
+        /*  */
+        if (config.options.inteface.streamwrite === true) {
+          if (window.showSaveFilePicker) {
+            const message = {
+              "b": "Recording canceled! please choose a destination folder and try again.",
+              "c": "Recording canceled! please write a file name that ends with '.webm' and try again.",
+              "a": "Recording canceled! please write a 'new' file name or reload the interface and try again."
+            }
+            /*  */
+            try {
+              const picker = await window.showSaveFilePicker({
+                "suggestedName": config.recorder.fileio.filename(),
+                "types": [{
+                  "description": "Desktop Screen Recorder",
+                  "accept": {
+                    "video/webm": [".webm"]
+                  }
+                }]
+              });
+              /*  */
+              const webm = picker.name.endsWith(".webm");
+              /*  */
+              if (webm) {
+                config.recorder.fileio.ready = true;
+                config.element.filepath.value = picker.name;
+                config.element.filepath.removeAttribute("required");
+                config.recorder.fileio.new.method = await picker.createWritable();
+              } else {
+                await config.recorder.stop();
+                config.notifications.create(message.c);
+              }
+            } catch (e) {
+              await config.recorder.stop();
+              const error = e && e.message && e.message.indexOf("modifications are not allowed") !== -1;
+              config.notifications.create(error ? message.a : message.b);
+            }
+          }
+        }
+      }
+    }
+  },
   "load": function () {
     const draw = document.getElementById("draw");
     const edit = document.getElementById("edit");
@@ -326,14 +410,25 @@ var config = {
     const labels = [...document.querySelectorAll("label")];
     const options = [...document.querySelectorAll(".option")];
     /*  */
+    config.element.filepath = document.querySelector("#filepath");
     config.element.elapsed = document.querySelector(".elapsed");
     config.element.status = document.querySelector(".status");
     config.element.start = document.querySelector(".start");
     config.element.logo = document.querySelector(".logo");
+    /*  */
+    config.recorder.api.version = chrome && chrome.desktopCapture && chrome.desktopCapture.chooseDesktopMedia ? "old" : "new";
     config.element.logo.setAttribute("init", '');
     /*  */
     reload.addEventListener("click", function () {
       document.location.reload();
+    });
+    /*  */
+    config.element.filepath.addEventListener("click", function () {
+      config.downloads.path.choose();
+    });
+    /*  */
+    config.element.filepath.addEventListener("change", function () {
+      config.downloads.path.write();
     });
     /*  */
     draw.addEventListener("click", function () {
@@ -361,26 +456,32 @@ var config = {
       chrome.tabs.create({"url": url, "active": true});
     }, false);
     /*  */
-    options.forEach(function (option) {
-      option.addEventListener("click", function (e) {
-        const input = e.target.querySelector("input");
-        if (input) input.click();
-      });
-    });
-    /*  */
     config.element.start.addEventListener("click", function () {
       const recording = config.recorder.engine && config.recorder.engine.state !== "inactive";
       if (recording) {
         config.recorder.stop();
       } else {
-        if (config.recorder.api.version) {
-          config.recorder.context = new AudioContext();
-          config.recorder.start[config.recorder.api.version]();
+        if (config.recorder.fileio.ready) {
+          if (config.recorder.api.version) {
+            config.recorder.context = new AudioContext();
+            config.recorder.start[config.recorder.api.version]();
+          } else {
+            config.notifications.create("Error! screen recorder is not ready.");
+            config.element.status.textContent = "Screen recorder is not ready!";
+          }
         } else {
-          config.notifications.create("Error! screen recorder is not ready.");
+          config.notifications.create("Please write a filename for the final recording, and then press the START button.");
           config.element.status.textContent = "Screen recorder is not ready!";
+          config.element.filepath.setAttribute("required", '');
         }
       }
+    });
+    /*  */
+    options.forEach(function (option) {
+      option.addEventListener("click", function (e) {
+        const input = e.target.querySelector("input");
+        if (input) input.click();
+      });
     });
     /*  */
     labels.forEach(function (label) {
@@ -401,6 +502,7 @@ var config = {
   "app": {
     "start": async function () {
       config.button.icon(null);
+      config.update.interface();
       if (config.options.inteface.streamwrite === false) config.recorder.fileio.old.restore();
       /*  */
       const permission = await config.permissions.query({"name": "microphone"});
@@ -428,7 +530,6 @@ var config = {
       if (mute) mute.checked = config.options.audio.mute.while.recording;
       if (streamwrite) streamwrite.checked = config.options.inteface.streamwrite;
       if (streamwrite) streamwrite.disabled = window.showSaveFilePicker ? false : true;
-      config.recorder.api.version = chrome && chrome.desktopCapture && chrome.desktopCapture.chooseDesktopMedia ? "old" : "new";
       /*  */
       minimize.addEventListener("change", function (e) {
         config.options.inteface.minimize = e.target.checked;
@@ -454,10 +555,12 @@ var config = {
         if (e.target.checked) {
           config.permissions.optional.remove();
           config.options.inteface.streamwrite = e.target.checked;
+          config.update.interface();
         } else {
           config.permissions.optional.request(function (granted) {
             if (granted) {
               config.options.inteface.streamwrite = e.target.checked;
+              config.update.interface();
             } else {
               e.target.checked = true;
             }
@@ -526,7 +629,7 @@ var config = {
                     /*  */
                     if (name === "audio-source") {
                       if (value === "mixed" || value === "microphone") {
-                        navigator.mediaDevices.getUserMedia({"video": false, "audio": true}).then(function (stream) {                      
+                        navigator.mediaDevices.getUserMedia({"video": false, "audio": true}).then(function (stream) {
                           config.options.audio.source.name = value;
                           config.options.audio.source.id = stream.id;
                         });
@@ -546,14 +649,8 @@ var config = {
   }
 };
 
-background.receive("button", function () {
-  let state = config.element.start.textContent;
-  if (state === "STOP") {
-    config.element.start.click();
-  }
-});
-
 config.port.connect();
+background.receive("button", config.action);
 window.addEventListener("load", config.load, false);
 window.addEventListener("resize", config.resize.method, false);
 window.addEventListener("beforeunload", config.beforeunload, {"capture": true});

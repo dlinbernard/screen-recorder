@@ -36,33 +36,6 @@ config.recorder = {
     if (config.recorder.id) window.clearTimeout(config.recorder.id);
     config.recorder.id = window.setTimeout(config.recorder.loop, config.recorder.timestep);
   },
-  "load": function (constraints) {
-    if (navigator) {
-      if (navigator.mediaDevices) {
-        if (navigator.mediaDevices.getUserMedia) {
-          navigator.mediaDevices.getUserMedia(constraints).then(function (desktop) {
-            if (config.options.audio.source.name === "mixed" || config.options.audio.source.name === "microphone") {
-              navigator.mediaDevices.getUserMedia({"video": false, "audio": true}).then(function (microphone) {
-                config.recorder.action(microphone, desktop);
-              }).catch(function (e) {
-                config.notifications.create("Error! 'microphone' is not allowed!");
-              });
-            } else {
-              config.recorder.action(null, desktop);
-            }
-          }).catch(function (e) {
-            config.notifications.create("Recording canceled! please select an option and try again.");
-          });
-        } else {
-          config.notifications.create("Error! 'getUserMedia' is not available on your machine!");
-        }
-      } else {
-        config.notifications.create("Error! 'mediaDevices' is not available on your machine!");
-      }
-    } else {
-      config.notifications.create("Error! 'navigator' is not available on your machine!");
-    }
-  },
   "blink": {
     "logo": function () {
       config.element.logo.setAttribute("blink", '');
@@ -90,10 +63,41 @@ config.recorder = {
       }, 500);
     }
   },
+  "load": function (constraints) {
+    if (navigator) {
+      if (navigator.mediaDevices) {
+        if (navigator.mediaDevices.getUserMedia) {
+          navigator.mediaDevices.getUserMedia(constraints).then(function (desktop) {
+            if (config.options.audio.source.name === "mixed" || config.options.audio.source.name === "microphone") {
+              navigator.mediaDevices.getUserMedia({"video": false, "audio": true}).then(function (microphone) {
+                config.recorder.action(microphone, desktop);
+              }).catch(function (e) {
+                config.notifications.create("Error! 'microphone' is not allowed!");
+              });
+            } else {
+              config.recorder.action(null, desktop);
+            }
+          }).catch(async function (e) {
+            await config.recorder.stop();
+            config.notifications.create("Recording canceled! please select an option and try again.");
+          });
+        } else {
+          config.notifications.create("Error! 'getUserMedia' is not available on your machine!");
+        }
+      } else {
+        config.notifications.create("Error! 'mediaDevices' is not available on your machine!");
+      }
+    } else {
+      config.notifications.create("Error! 'navigator' is not available on your machine!");
+    }
+  },
   "stop": async function () {
     let tracks = {};
+    /*  */
     config.button.icon(null);
     config.recorder.switch = true;
+    config.element.filepath.value = '';
+    config.recorder.fileio.ready = false;
     config.element.status.textContent = '';
     config.element.elapsed.textContent = '';
     config.recorder.timing.end = Date.now();
@@ -131,7 +135,6 @@ config.recorder = {
     config.recorder.stream = new MediaStream();
     /*  */
     config.recorder.final.audio = null;
-    config.recorder.fileio.ready = false;
     config.recorder.final.video = config.recorder.desktop.getVideoTracks()[0];
     /*  */
     if (config.recorder.microphone) {
@@ -168,35 +171,6 @@ config.recorder = {
     config.recorder.final.video.onended = config.recorder.stop;
     config.recorder.stream.onremovetrack = config.recorder.stop;
     /*  */
-    if (config.options.inteface.streamwrite) {
-      if (window.showSaveFilePicker) {
-        try {
-          const picker = await window.showSaveFilePicker({
-            "suggestedName": config.recorder.fileio.filename(),
-            "types": [{
-              "description": "Desktop Screen Recorder",
-              "accept": {
-                "video/webm": [".webm"]
-              }
-            }]
-          });
-          /*  */
-          config.recorder.fileio.new.method = await picker.createWritable();
-          config.recorder.fileio.ready = true;
-        } catch (e) {
-          config.notifications.create("Recording canceled! please select an option and try again.");
-        }
-      }
-    } else {
-      try {
-        config.recorder.fileio.old.data = new File();
-        await config.recorder.fileio.old.data.open();
-        config.recorder.fileio.ready = true;
-      } catch (e) {
-        config.notifications.create("Recording canceled! please select an option and try again.");
-      }
-    }
-    /*  */
     if (config.recorder.fileio.ready) {
       config.recorder.engine = new MediaRecorder(config.recorder.stream, {"mimeType": "video/webm"});
       config.recorder.engine.ondataavailable = config.options.inteface.streamwrite ? config.recorder.fileio.new.process : config.recorder.fileio.old.process;
@@ -213,6 +187,10 @@ config.recorder = {
       if (config.options.inteface.minimize) background.send("state", "minimized");
       if (config.recorder.id) window.clearTimeout(config.recorder.id);
       config.recorder.id = window.setTimeout(config.recorder.loop, config.recorder.timestep);
+    } else {
+      await config.recorder.stop();
+      config.notifications.create("Error! screen recorder is not ready.");
+      config.element.status.textContent = "Screen recorder is not ready!";
     }
   },
   "start": {
@@ -255,6 +233,7 @@ config.recorder = {
                 config.notifications.create("Error! recording failed, please try again.");
               }
             } catch (e) {
+              await config.recorder.stop();
               config.notifications.create("Recording canceled! please select an option and try again.");
             }
           } else {
@@ -418,10 +397,11 @@ config.recorder = {
           await file.open();
           /*  */
           try {
+            const filename = config.element.filepath.value ? config.element.filepath.value : config.recorder.fileio.filename();
             await file.download({
               "offsets": [],
               "mime": "video/webm",
-              "filename": config.recorder.fileio.filename()
+              "filename": filename
             });
           } catch (e) {
             config.notifications.create("Error! could not restore recorded files!");
@@ -503,10 +483,11 @@ config.recorder = {
               });
             }
             /*  */
+            const filename = config.element.filepath.value ? config.element.filepath.value : config.recorder.fileio.filename();
             config.recorder.fileio.old.data.download({
               "offsets": [],
               "mime": "video/webm",
-              "filename": config.recorder.fileio.filename()
+              "filename": filename
             }).then(function (e) {
               if (e.state === "complete") {
                 window.setTimeout(function () {

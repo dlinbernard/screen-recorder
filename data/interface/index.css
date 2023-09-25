@@ -31,7 +31,7 @@ table tr td {
 }
 
 input, label, table tr td {
-  color: #555;
+  color: #333;
   font-size: 12px;
   font-family: arial, sans-serif;
 }
@@ -65,7 +65,7 @@ input[type='radio'], input[type='checkbox'] {
   margin-top: 10px;
   flex-flow: column;
   align-items: center;
-  height: calc(100vh - 222px);
+  height: calc(100vh - 233px);
 }
 
 .logo {
@@ -98,6 +98,10 @@ input[type='radio'], input[type='checkbox'] {
   user-select: none;
   align-items: center;
   justify-content: center;
+}
+
+.section:has(#filepath) {
+  margin-bottom: 5px;
 }
 
 .row {
@@ -148,9 +152,44 @@ input[type='radio'], input[type='checkbox'] {
   background-color: rgba(0,0,0,0.03);
 }
 
+.option:has(#filepath) {
+  width: 100%;
+  height: 48px;
+  cursor: default;
+  margin-top: 5px;
+  max-width: 630px;
+  border-color: #b3b3b3;
+  background-color: #fff;
+}
+
+.option:has(#filepath[required]) {
+  border-color: #ed5646;
+  animation: blinker 1000ms linear infinite;
+}
+
+.option #filepath {
+  border: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  cursor: auto;
+  outline: none;
+  color: #0075ff;
+  font-size: 13px;
+  font-weight: 600;
+  text-indent: 15px;
+  background-color: #fff;
+  font-family: monospace;
+  box-sizing: border-box;
+}
+
+.option #filepath[streamwrite='true'] {
+  cursor: default;
+}
+
 .title {
   padding: 0;
-  color: #555;
+  color: #333;
   height: 38px;
   display: flex;
   font-size: 12px;
@@ -164,7 +203,7 @@ input[type='radio'], input[type='checkbox'] {
 .title p {
   margin: 0;
   padding: 0;
-  color: #808080;
+  color: #555;
   font-size: 11px;
   overflow: hidden;
   font-weight: 600;
@@ -225,11 +264,11 @@ input[type='radio'], input[type='checkbox'] {
   padding: 0;
   color: #fff;
   width: 100%;
-  height: 42px;
+  height: 48px;
   cursor: pointer;
   font-weight: 600;
   margin-top: 10px;
-  line-height: 42px;
+  line-height: 48px;
   user-select: none;
   text-align: center;
   letter-spacing: 1px;
@@ -255,19 +294,20 @@ input[type='radio'], input[type='checkbox'] {
 .status, .elapsed {
   border: 0;
   margin: 0;
+  color: #333;
   float: right;
   height: 44px;
-  color: #6f6f6f;
-  font-size: 12px;
-  padding: 0 10px;
+  font-size: 13px;
+  padding: 0 15px;
   overflow: hidden;
   font-weight: 600;
   text-align: right;
   line-height: 44px;
   white-space: nowrap;
   font-family: monospace;
+  width: calc(50% - 5px);
+  box-sizing: border-box;
   text-overflow: ellipsis;
-  width: calc(50% - 22px);
   transition: 300ms ease all;
 }
 
@@ -311,7 +351,7 @@ input[type='radio'], input[type='checkbox'] {
 }
 
 .extra table tr td svg, .toolbar table tr td svg {
-  fill: #777;
+  fill: #555;
   pointer-events: none;
   vertical-align: middle;
 }
@@ -325,6 +365,12 @@ input[type='radio'], input[type='checkbox'] {
     font-size: 11px;
     font-weight: normal;
     font-family: monaco, "andale mono", "lucida console", "courier new", monospace;
+  }
+}
+
+@keyframes blinker {
+  50% {
+    border-color: transparent;
   }
 }
 
@@ -343,7 +389,7 @@ input[type='radio'], input[type='checkbox'] {
 
 @media (max-width: 500px) {
   .container {
-    height: calc(100vh - 235px);
+    height: calc(100vh - 233px);
   } 
   .row {
     padding: 0;
