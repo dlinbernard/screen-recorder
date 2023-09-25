@@ -155,6 +155,7 @@ input[type='radio'], input[type='checkbox'] {
 .option:has(#filepath) {
   width: 100%;
   height: 48px;
+  opacity: 1.00;
   cursor: default;
   margin-top: 5px;
   max-width: 630px;
