@@ -71,7 +71,7 @@ var config = {
     }
   },
   "action": function () {
-    let state = config.element.start.textContent;
+    const state = config.element.start.textContent;
     if (state === "STOP") {
       config.element.start.click();
     }
@@ -148,7 +148,7 @@ var config = {
       if (config.port.name === "win") {
         if (config.resize.timeout) window.clearTimeout(config.resize.timeout);
         config.resize.timeout = window.setTimeout(async function () {
-          let current = await chrome.windows.getCurrent();
+          const current = await chrome.windows.getCurrent();
           /*  */
           config.storage.write("interface.size", {
             "top": current.top,
@@ -340,17 +340,20 @@ var config = {
         /*  */
         if (config.options.inteface.streamwrite === false) {
           try {
-            const webm = config.element.filepath.value.endsWith(".webm");
-            /*  */
-            if (webm) {
-              config.recorder.fileio.ready = true;
-              config.recorder.fileio.old.data = new File();
-              await config.recorder.fileio.old.data.open();
-              config.element.filepath.removeAttribute("required");
+            if (config.element.filepath.value)  {
+              const webm = config.element.filepath.value.endsWith(".webm");
+              if (webm === false) {
+                await config.recorder.stop();
+                config.notifications.create("Recording canceled! please write a file name that ends with '.webm' and try again.");
+              }
             } else {
-              await config.recorder.stop();
-              config.notifications.create("Recording canceled! please write a file name that ends with '.webm' and try again.");
+              config.element.filepath.value = config.recorder.fileio.filename();
             }
+            /*  */
+            config.recorder.fileio.ready = true;
+            config.recorder.fileio.old.data = new File();
+            await config.recorder.fileio.old.data.open();
+            config.element.filepath.removeAttribute("required");
           } catch (e) {
             await config.recorder.stop();
             config.notifications.create("Recording canceled! please choose a destination folder and try again.");
@@ -423,12 +426,12 @@ var config = {
       document.location.reload();
     });
     /*  */
-    config.element.filepath.addEventListener("click", function () {
-      config.downloads.path.choose();
+    config.element.filepath.addEventListener("click", async function () {
+      await config.downloads.path.choose();
     });
     /*  */
-    config.element.filepath.addEventListener("change", function () {
-      config.downloads.path.write();
+    config.element.filepath.addEventListener("change", async function () {
+      await config.downloads.path.write();
     });
     /*  */
     draw.addEventListener("click", function () {
@@ -456,23 +459,22 @@ var config = {
       chrome.tabs.create({"url": url, "active": true});
     }, false);
     /*  */
-    config.element.start.addEventListener("click", function () {
+    config.element.start.addEventListener("click", async function () {
       const recording = config.recorder.engine && config.recorder.engine.state !== "inactive";
       if (recording) {
         config.recorder.stop();
       } else {
         if (config.recorder.fileio.ready) {
-          if (config.recorder.api.version) {
-            config.recorder.context = new AudioContext();
-            config.recorder.start[config.recorder.api.version]();
-          } else {
-            config.notifications.create("Error! screen recorder is not ready.");
-            config.element.status.textContent = "Screen recorder is not ready!";
-          }
+          config.recorder.start.initialize();
         } else {
-          config.notifications.create("Please write a filename for the final recording, and then press the START button.");
-          config.element.status.textContent = "Screen recorder is not ready!";
-          config.element.filepath.setAttribute("required", '');
+          if (config.options.inteface.streamwrite === true) {
+            config.notifications.create("Please write a filename for the final recording, and then press the START button.");
+            config.element.status.textContent = "Screen recorder is not ready!";
+            config.element.filepath.setAttribute("required", '');
+          } else {
+            await config.downloads.path.write();
+            config.recorder.start.initialize();
+          }
         }
       }
     });
@@ -651,6 +653,7 @@ var config = {
 
 config.port.connect();
 background.receive("button", config.action);
+
 window.addEventListener("load", config.load, false);
 window.addEventListener("resize", config.resize.method, false);
 window.addEventListener("beforeunload", config.beforeunload, {"capture": true});

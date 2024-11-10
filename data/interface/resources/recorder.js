@@ -96,7 +96,6 @@ config.recorder = {
     /*  */
     config.button.icon(null);
     config.recorder.switch = true;
-    config.element.filepath.value = '';
     config.recorder.fileio.ready = false;
     config.element.status.textContent = '';
     config.element.elapsed.textContent = '';
@@ -195,6 +194,15 @@ config.recorder = {
   },
   "start": {
     "time": null,
+    "initialize": function () {
+      if (config.recorder.api.version) {
+        config.recorder.context = new AudioContext();
+        config.recorder.start[config.recorder.api.version]();
+      } else {
+        config.notifications.create("Error! screen recorder is not ready.");
+        config.element.status.textContent = "Screen recorder is not ready!";
+      }
+    },
     "new": async function () {
       if (navigator) {
         if (navigator.mediaDevices) {
@@ -298,9 +306,9 @@ config.recorder = {
     "blob": null,
     "offsets": [],
     "ready": false,
-    "filename": function () {
+    "filename": function (e) {
       const date = (new Date()).toString().toLowerCase().slice(0, 24);
-      const filename = "screen-recorder-" + date.replace(/ /g, '-').replace(/:/g, '-') + ".webm";
+      const filename = e ? (e.endsWith(".webm") ? e : e + ".webm") : ("screen-recorder-" + date.replace(/ /g, '-').replace(/:/g, '-') + ".webm");
       /*  */
       return filename;
     },
@@ -359,6 +367,7 @@ config.recorder = {
               config.recorder.fileio.new.method.close();
               config.element.status.textContent = '';
               config.recorder.fileio.new.count = 0;
+              config.element.filepath.value = '';
               config.recorder.fileio.blobs = [];
               /*  */
               delete config.recorder.engine;
@@ -492,6 +501,7 @@ config.recorder = {
               if (e.state === "complete") {
                 window.setTimeout(function () {
                   config.recorder.fileio.blobs = [];
+                  config.element.filepath.value = '';
                   config.recorder.fileio.offsets = [];
                   config.recorder.fileio.old.count = 0;
                   config.element.status.textContent = '';
