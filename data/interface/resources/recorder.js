@@ -30,7 +30,7 @@ config.recorder = {
     }
   },
   "loop": function () {
-    let recording = config.recorder.engine && config.recorder.engine.state !== "inactive";
+    const recording = config.recorder.engine && config.recorder.engine.state !== "inactive";
     if (recording) config.recorder.engine.requestData();
     /*  */
     if (config.recorder.id) window.clearTimeout(config.recorder.id);
@@ -48,15 +48,19 @@ config.recorder = {
       }, 500);
     },
     "status": function () {
-      let a = "Recording";
-      let b = "Recording.";
-      let c = "Recording..";
-      let d = "Recording...";
+      const hasaudio = config.recorder.stream && config.recorder.stream.getAudioTracks && config.recorder.stream.getAudioTracks().length;
+      const hasvideo = config.recorder.stream && config.recorder.stream.getVideoTracks && config.recorder.stream.getVideoTracks().length;
+      const state = hasaudio && hasvideo ? "Video & Audio" : (hasvideo ? "Video Only" : (hasaudio ? "Audio Only" : "No Video, No Audio"));
+      /*  */
+      const a = "Recording (" + state + ")";
+      const b = "Recording (" + state + ").";
+      const c = "Recording (" + state + ")..";
+      const d = "Recording (" + state + ")...";
       /*  */
       if (config.recorder.interval.status) window.clearInterval(config.recorder.interval.status);
       config.recorder.interval.status = window.setInterval(function () {
-        let e = config.element.status.textContent;
-        let elapsed = Math.round(((new Date()) - config.recorder.start.time) / 1000);
+        const e = config.element.status.textContent;
+        const elapsed = Math.round(((new Date()) - config.recorder.start.time) / 1000);
         /*  */
         config.element.status.textContent = e === a ? b : (e === b ? c : (e === c ? d : a));
         config.element.elapsed.textContent = "Elapsed time: " + config.convert.seconds.to.hhmmss(elapsed);
@@ -201,6 +205,25 @@ config.recorder = {
       } else {
         config.notifications.create("Error! screen recorder is not ready.");
         config.element.status.textContent = "Screen recorder is not ready!";
+      }
+    },
+    "listener": async function () {
+      const recording = config.recorder.engine && config.recorder.engine.state !== "inactive";
+      if (recording) {
+        config.recorder.stop();
+      } else {
+        if (config.recorder.fileio.ready) {
+          config.recorder.start.initialize();
+        } else {
+          if (config.options.inteface.streamwrite === true) {
+            config.notifications.create("Please write a filename for the final recording, and then press the START button.");
+            config.element.status.textContent = "Screen recorder is not ready!";
+            config.element.filepath.setAttribute("required", '');
+          } else {
+            await config.downloads.path.write();
+            config.recorder.start.initialize();
+          }
+        }
       }
     },
     "new": async function () {
@@ -517,10 +540,12 @@ config.recorder = {
                   delete config.recorder.fileio.unit8buffer;
                 }, 300);
               } else {
+                console.error(11);
                 config.notifications.create("Error! could not write the result to disk!");
                 config.element.status.textContent = "Error! could not write the result to disk!";
               }
             }).catch(function (e) {
+              console.error(12, e);
               config.notifications.create("Error! could not write the result to disk!");
               config.element.status.textContent = "Error! could not write the result to disk!";
             });

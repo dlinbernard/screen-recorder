@@ -247,8 +247,7 @@ var config = {
   "permissions": {
     "query": async function (options) {
       return await new Promise(function (resolve, reject) {
-        const firefox = navigator.userAgent.toLowerCase().indexOf("firefox");
-        if (firefox) {
+        if (navigator.userAgent.toLowerCase().indexOf("firefox") !== -1) {
           resolve({"state": "unsupported"});
         } else {
           try {
@@ -459,23 +458,26 @@ var config = {
       chrome.tabs.create({"url": url, "active": true});
     }, false);
     /*  */
-    config.element.start.addEventListener("click", async function () {
-      const recording = config.recorder.engine && config.recorder.engine.state !== "inactive";
-      if (recording) {
-        config.recorder.stop();
+    config.element.start.addEventListener("click", function () {
+      if (window.showSaveFilePicker) {
+        config.recorder.start.listener();
       } else {
-        if (config.recorder.fileio.ready) {
-          config.recorder.start.initialize();
-        } else {
-          if (config.options.inteface.streamwrite === true) {
-            config.notifications.create("Please write a filename for the final recording, and then press the START button.");
-            config.element.status.textContent = "Screen recorder is not ready!";
-            config.element.filepath.setAttribute("required", '');
+        config.permissions.optional.contains(function (result) {
+          if (result) {
+            config.recorder.start.listener();
           } else {
-            await config.downloads.path.write();
-            config.recorder.start.initialize();
+            config.permissions.optional.request(function (granted) {
+              if (granted) {
+                config.recorder.start.listener();
+              } else {
+                config.notifications.create("Error! Could not access the downloads folder to save the final recording. Please reload the app and try again.");
+                window.setTimeout(function () {
+                  config.element.status.textContent = "Screen recorder is not ready!";
+                }, 300);
+              }
+            });
           }
-        }
+        });
       }
     });
     /*  */
@@ -505,6 +507,7 @@ var config = {
     "start": async function () {
       config.button.icon(null);
       config.update.interface();
+      if (!window.showSaveFilePicker) config.options.inteface.streamwrite = false;
       if (config.options.inteface.streamwrite === false) config.recorder.fileio.old.restore();
       /*  */
       const permission = await config.permissions.query({"name": "microphone"});
@@ -547,8 +550,10 @@ var config = {
       /*  */
       config.permissions.optional.contains(function (result) {
         if (result === false) {
-          if (streamwrite.checked === false) {
-            streamwrite.click();
+          if (window.showSaveFilePicker) {
+            if (streamwrite.checked === false) {
+              streamwrite.click();
+            }
           }
         }
       });
@@ -568,12 +573,7 @@ var config = {
             }
           });
         }
-      }); 
-      /*  */
-      window.setTimeout(function () {
-        config.element.logo.removeAttribute("init");
-        config.element.status.textContent = "Screen recorder is ready.";
-      }, 1500);
+      });
       /*  */
       if (context === "webapp") {
         document.querySelector(".row[category='settings']").setAttribute("disabled", '');
@@ -647,6 +647,11 @@ var config = {
           });
         }
       }
+      /*  */
+      window.setTimeout(function () {
+        config.element.logo.removeAttribute("init");
+        config.element.status.textContent = "Screen recorder is ready.";
+      }, 1500);
     }
   }
 };
