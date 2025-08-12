@@ -74,8 +74,16 @@ input[type='radio'], input[type='checkbox'] {
   background-repeat: no-repeat;
   background-size: 50px !important;
   background-position: center center;
-  background-image: url('../icons/100.png');
-  border-bottom: solid 1px rgba(0,0,0,0.05);
+  border-bottom: solid 1px rgba(0, 0, 0, 0.05);
+  background-image: url('../icons/100-light.png');
+}
+
+html[theme='light'] .logo {
+  background-image: url('../icons/100-light.png');
+}
+
+html[theme='dark'] .logo {
+  background-image: url('../icons/100-dark.png');
 }
 
 .logo[init] {
@@ -126,6 +134,10 @@ input[type='radio'], input[type='checkbox'] {
   pointer-events: none;
 }
 
+.row[category='video'] .title:after {
+  max-width: calc(100% - 198px);
+}
+
 .option {
   padding: 0;
   margin: 5px;
@@ -143,13 +155,13 @@ input[type='radio'], input[type='checkbox'] {
   box-sizing: border-box;
   text-overflow: ellipsis;
   justify-content: center;
-  border: solid 1px rgba(0,0,0,0.1);
-  background-color: rgba(0,0,0,0.01);
+  border: solid 1px rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.01);
   transition: 300ms ease background-color;
 }
 
 .option:hover {
-  background-color: rgba(0,0,0,0.03);
+  background-color: rgba(0, 0, 0, 0.03);
 }
 
 .option:has([disabled]) {
@@ -230,7 +242,7 @@ input[type='radio'], input[type='checkbox'] {
   content: '';
   margin: auto;
   margin-top: 18px;
-  border-bottom: solid 1px rgba(0,0,0,0.05);
+  border-bottom: solid 1px rgba(0, 0, 0, 0.05);
 }
 
 .title:after {
@@ -276,6 +288,7 @@ input[type='radio'], input[type='checkbox'] {
   width: 100%;
   height: 48px;
   cursor: pointer;
+  font-size: 13px;
   font-weight: 600;
   margin-top: 10px;
   line-height: 50px;
@@ -297,8 +310,8 @@ input[type='radio'], input[type='checkbox'] {
   width: 100%;
   margin: auto;
   height: 44px;
-  border-top: solid 1px rgba(0,0,0,0.05);
-  border-bottom: solid 1px rgba(0,0,0,0.05);
+  border-top: solid 1px rgba(0, 0, 0, 0.05);
+  border-bottom: solid 1px rgba(0, 0, 0, 0.05);
 }
 
 .status, .elapsed {
@@ -358,6 +371,7 @@ input[type='radio'], input[type='checkbox'] {
   cursor: pointer;
   user-select: none;
   text-align: center;
+  transition: 300ms ease background-color;
 }
 
 .extra table tr td svg, .toolbar table tr td svg {
@@ -367,7 +381,32 @@ input[type='radio'], input[type='checkbox'] {
 }
 
 .extra table tr td:hover, .toolbar table tr td:hover {
-  background-color: rgba(0,0,0,0.05);
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+#theme {
+  right: 0;
+  padding: 0;
+  top: 124px;
+  z-index: 11;
+  width: 42px;
+  height: 42px;
+  position: fixed;
+  cursor: pointer;
+  line-height: 42px;
+  user-select: none;
+  text-align: center;
+  transition: 300ms ease background-color;
+}
+
+#theme svg {
+  fill: #555;
+  pointer-events: none;
+  vertical-align: middle;
+}
+
+#theme:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 @-moz-document url-prefix() {
@@ -391,6 +430,18 @@ input[type='radio'], input[type='checkbox'] {
   100% {background-image: url('../icons/ON/100.png')}
 }
 
+@media (max-width: 750px) {
+  .row[category='video'] .title:after {
+    max-width: unset;
+  }
+  #theme {
+    top: 78px;
+    right: 44px;
+    height: 38px;
+    line-height: 38px;
+  }
+}
+
 @media (max-width: 600px) {
   .row {
     width: calc(100% - 10px);
@@ -406,7 +457,7 @@ input[type='radio'], input[type='checkbox'] {
     width: calc(100% - 20px);
   }
   .start {
-    padding: 20px;
+    padding: 0;
   }
   .title {
     margin-bottom: 5px;
@@ -421,4 +472,68 @@ input[type='radio'], input[type='checkbox'] {
 html[context='webapp'] .extra,
 html[context='webapp'] .toolbar {
   display: none;
+}
+
+html[context='webapp'] .row[category="video"] .title::after {
+  max-width: unset;
+}
+
+html[context='webapp'] #theme {
+  top: 0;
+  right: 0;
+  height: 42px;
+  line-height: 42px;
+}
+
+html[theme='dark'], 
+html[theme='dark'] body {
+  color: #ebebeb;
+  color-scheme: dark;
+  background-color: #1e1e1e;
+}
+
+html[theme='dark'] .option {
+  background-color: rgb(255 255 255 / 3%);
+}
+
+html[theme='dark'] #theme:hover,
+html[theme='dark'] .option:hover,
+html[theme='dark'] .extra table tr td:hover,
+html[theme='dark'] .toolbar table tr td:hover {
+  background-color: rgb(255 255 255 / 5%);
+}
+
+html[theme='dark'] .footer,
+html[theme='dark'] .option #filepath {
+  background-color: #1e1e1e;
+}
+
+html[theme='dark'] .option #filepath {
+  color: #4e9fff;
+}
+
+html[theme='dark'] input,
+html[theme='dark'] label,
+html[theme='dark'] .status,
+html[theme='dark'] .elapsed,
+html[theme='dark'] .title p,
+html[theme='dark'] table tr td {
+  color: #ebebeb;
+}
+
+html[theme='dark'] #theme svg,
+html[theme='dark'] .extra table tr td svg,
+html[theme='dark'] .toolbar table tr td svg {
+  fill: #ebebeb;
+}
+
+html[theme='dark'] .option:has(#filepath) {
+  border-color: #555555;
+}
+
+html[theme='dark'] .info,
+html[theme='dark'] .logo,
+html[theme='dark'] .option,
+html[theme='dark'] .title:after {
+  border-color: rgb(255 255 255 / 10%);
 }

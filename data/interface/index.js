@@ -207,19 +207,21 @@ var config = {
     }
   },
   "options": {
-    "inteface": {
-      set minimize (val) {config.storage.write("inteface-minimize", val)},
-      set seekable (val) {config.storage.write("inteface-seekable", val)},
-      set streamwrite (val) {config.storage.write("inteface-stream-write", val)},
-      get minimize () {return config.storage.read("inteface-minimize") !== undefined ? config.storage.read("inteface-minimize") : true},
-      get seekable () {return config.storage.read("inteface-seekable") !== undefined ? config.storage.read("inteface-seekable") : false},
-      get streamwrite () {return config.storage.read("inteface-stream-write") !== undefined ? config.storage.read("inteface-stream-write") : true}
-    },
     "quality": {
       set id (val) {config.storage.write("quality-id", val)},
       set name (val) {config.storage.write("quality-name", val)},
       get id () {return config.storage.read("quality-id") !== undefined ? config.storage.read("quality-id") : ''},
       get name () {return config.storage.read("quality-name") !== undefined ? config.storage.read("quality-name") : "default"}
+    },
+    "inteface": {
+      set theme (val) {config.storage.write("interface-theme", val)},
+      set minimize (val) {config.storage.write("inteface-minimize", val)},
+      set seekable (val) {config.storage.write("inteface-seekable", val)},
+      set streamwrite (val) {config.storage.write("inteface-stream-write", val)},
+      get theme () {return config.storage.read("interface-theme") !== undefined ? config.storage.read("interface-theme") : "light"},
+      get minimize () {return config.storage.read("inteface-minimize") !== undefined ? config.storage.read("inteface-minimize") : true},
+      get seekable () {return config.storage.read("inteface-seekable") !== undefined ? config.storage.read("inteface-seekable") : false},
+      get streamwrite () {return config.storage.read("inteface-stream-write") !== undefined ? config.storage.read("inteface-stream-write") : true}
     },
     "video": {
       "source": {
@@ -405,6 +407,7 @@ var config = {
   "load": function () {
     const draw = document.getElementById("draw");
     const edit = document.getElementById("edit");
+    const theme = document.getElementById("theme");
     const webapp = document.getElementById("webapp");
     const reload = document.getElementById("reload");
     const support = document.getElementById("support");
@@ -457,6 +460,14 @@ var config = {
       const url = config.addon.homepage() + "?reason=support";
       chrome.tabs.create({"url": url, "active": true});
     }, false);
+    /*  */
+    theme.addEventListener("click", function () {
+      let attribute = document.documentElement.getAttribute("theme");
+      attribute = attribute === "dark" ? "light" : "dark";
+      /*  */
+      document.documentElement.setAttribute("theme", attribute);
+      config.storage.write("interface-theme", attribute);
+    });
     /*  */
     config.element.start.addEventListener("click", function () {
       if (window.showSaveFilePicker) {
@@ -518,6 +529,7 @@ var config = {
         }
       }
       /*  */
+      const theme = config.options.inteface.theme;
       const mute = document.querySelector("input[id='mute']");
       const minimize = document.querySelector("input[id='minimize']");
       const seekable = document.querySelector("input[id='seekable']");
@@ -535,6 +547,7 @@ var config = {
       if (mute) mute.checked = config.options.audio.mute.while.recording;
       if (streamwrite) streamwrite.checked = config.options.inteface.streamwrite;
       if (streamwrite) streamwrite.disabled = window.showSaveFilePicker ? false : true;
+      document.documentElement.setAttribute("theme", theme !== undefined ? theme : "light");
       /*  */
       minimize.addEventListener("change", function (e) {
         config.options.inteface.minimize = e.target.checked;
