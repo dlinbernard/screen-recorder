@@ -175,7 +175,8 @@ config.recorder = {
     config.recorder.stream.onremovetrack = config.recorder.stop;
     /*  */
     if (config.recorder.fileio.ready) {
-      config.recorder.engine = new MediaRecorder(config.recorder.stream, {"mimeType": "video/webm"});
+      const metrics = config.recorder.fileio.metrics();
+      config.recorder.engine = new MediaRecorder(config.recorder.stream, {"mimeType": metrics.mimetype});
       config.recorder.engine.ondataavailable = config.options.inteface.streamwrite ? config.recorder.fileio.new.process : config.recorder.fileio.old.process;
       config.recorder.engine.onerror = config.recorder.stop;
       /*  */
@@ -329,11 +330,18 @@ config.recorder = {
     "blob": null,
     "offsets": [],
     "ready": false,
-    "filename": function (e) {
-      const date = (new Date()).toString().toLowerCase().slice(0, 24);
-      const filename = e ? (e.endsWith(".webm") ? e : e + ".webm") : ("screen-recorder-" + date.replace(/ /g, '-').replace(/:/g, '-') + ".webm");
+    "metrics": function (e) {
+      const extension = config.options.inteface.mp4 ? ".mp4" : ".webm";
+      const mimetype = config.options.inteface.mp4 ? "video/mp4" : "video/webm";
       /*  */
-      return filename;
+      const date = (new Date()).toString().toLowerCase().slice(0, 24);
+      const filename = e ? (e.endsWith(".mp4") || e.endsWith(".webm") ? e : e + extension) : ("screen-recorder-" + date.replace(/ /g, '-').replace(/:/g, '-') + extension);
+      /*  */
+      return {
+        "filename": filename,
+        "mimetype": mimetype,
+        "extension": extension
+      };
     },
     "new": {
       "count": 0,
@@ -429,11 +437,12 @@ config.recorder = {
           await file.open();
           /*  */
           try {
-            const filename = config.element.filepath.value ? config.element.filepath.value : config.recorder.fileio.filename();
+            const metrics = config.recorder.fileio.metrics();
+            const filename = config.element.filepath.value ? config.element.filepath.value : metrics.filename;
             await file.download({
               "offsets": [],
-              "mime": "video/webm",
-              "filename": filename
+              "filename": filename,
+              "mime": metrics.mimetype
             });
           } catch (e) {
             config.notifications.create("Error! could not restore recorded files!");
@@ -515,11 +524,12 @@ config.recorder = {
               });
             }
             /*  */
-            const filename = config.element.filepath.value ? config.element.filepath.value : config.recorder.fileio.filename();
+            const metrics = config.recorder.fileio.metrics();
+            const filename = config.element.filepath.value ? config.element.filepath.value : metrics.filename;
             config.recorder.fileio.old.data.download({
               "offsets": [],
-              "mime": "video/webm",
-              "filename": filename
+              "filename": filename,
+              "mime": metrics.mimetype
             }).then(function (e) {
               if (e.state === "complete") {
                 window.setTimeout(function () {

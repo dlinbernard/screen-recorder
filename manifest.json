@@ -1,5 +1,5 @@
 {
-  "version": "0.2.2",
+  "version": "0.2.3",
   "manifest_version": 3,
   "offline_enabled": true,
   "name": "Screen Recorder",
@@ -22,10 +22,10 @@
   "action": {
     "default_title": "Screen Recorder",
     "default_icon": {
-      "16": "data/icons/16.png",
-      "32": "data/icons/32.png",
-      "48": "data/icons/48.png",
-      "64": "data/icons/64.png"
+      "16": "data/icons/toolbar/16.png",
+      "32": "data/icons/toolbar/32.png",
+      "48": "data/icons/toolbar/48.png",
+      "64": "data/icons/toolbar/64.png"
     }
   },
   "icons": {

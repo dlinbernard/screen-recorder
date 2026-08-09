@@ -113,10 +113,10 @@ var config = {
           if (chrome.action.setIcon) {
             chrome.action.setIcon({
               "path": {
-                "16": "../../data/icons/" + (e ? e + '/' : '') + "16.png",
-                "32": "../../data/icons/" + (e ? e + '/' : '') + "32.png",
-                "48": "../../data/icons/" + (e ? e + '/' : '') + "48.png",
-                "64": "../../data/icons/" + (e ? e + '/' : '') + "64.png"
+                "16": "../../data/icons/" + (e ? e + '/' : "toolbar/") + "16.png",
+                "32": "../../data/icons/" + (e ? e + '/' : "toolbar/") + "32.png",
+                "48": "../../data/icons/" + (e ? e + '/' : "toolbar/") + "48.png",
+                "64": "../../data/icons/" + (e ? e + '/' : "toolbar/") + "64.png"
               }
             });
           }
@@ -214,10 +214,12 @@ var config = {
       get name () {return config.storage.read("quality-name") !== undefined ? config.storage.read("quality-name") : "default"}
     },
     "inteface": {
+      set mp4 (val) {config.storage.write("inteface-mp4", val)},
       set theme (val) {config.storage.write("interface-theme", val)},
       set minimize (val) {config.storage.write("inteface-minimize", val)},
       set seekable (val) {config.storage.write("inteface-seekable", val)},
       set streamwrite (val) {config.storage.write("inteface-stream-write", val)},
+      get mp4 () {return config.storage.read("inteface-mp4") !== undefined ? config.storage.read("inteface-mp4") : false},
       get theme () {return config.storage.read("interface-theme") !== undefined ? config.storage.read("interface-theme") : "light"},
       get minimize () {return config.storage.read("inteface-minimize") !== undefined ? config.storage.read("inteface-minimize") : true},
       get seekable () {return config.storage.read("inteface-seekable") !== undefined ? config.storage.read("inteface-seekable") : false},
@@ -348,7 +350,7 @@ var config = {
                 config.notifications.create("Recording canceled! please write a file name that ends with '.webm' and try again.");
               }
             } else {
-              config.element.filepath.value = config.recorder.fileio.filename();
+              config.element.filepath.value = config.recorder.fileio.metrics().filename;
             }
             /*  */
             config.recorder.fileio.ready = true;
@@ -373,19 +375,20 @@ var config = {
             }
             /*  */
             try {
+              const metrics = config.recorder.fileio.metrics();
               const picker = await window.showSaveFilePicker({
-                "suggestedName": config.recorder.fileio.filename(),
+                "suggestedName": metrics.filename,
                 "types": [{
                   "description": "Desktop Screen Recorder",
                   "accept": {
-                    "video/webm": [".webm"]
+                    [metrics.mimetype]: [metrics.extension]
                   }
                 }]
               });
               /*  */
-              const webm = picker.name.endsWith(".webm");
+              const valid = picker.name.endsWith(".mp4") || picker.name.endsWith(".webm");
               /*  */
-              if (webm) {
+              if (valid) {
                 config.recorder.fileio.ready = true;
                 config.element.filepath.value = picker.name;
                 config.element.filepath.removeAttribute("required");
@@ -530,6 +533,7 @@ var config = {
       }
       /*  */
       const theme = config.options.inteface.theme;
+      const mp4 = document.querySelector("input[id='mp4']");
       const mute = document.querySelector("input[id='mute']");
       const minimize = document.querySelector("input[id='minimize']");
       const seekable = document.querySelector("input[id='seekable']");
@@ -542,10 +546,12 @@ var config = {
       if (video) video.checked = true;
       if (audio) audio.checked = true;
       if (quality) quality.checked = true;
+      if (mp4) mp4.checked = config.options.inteface.mp4;
       if (minimize) minimize.checked = config.options.inteface.minimize;
       if (seekable) seekable.checked = config.options.inteface.seekable;
       if (mute) mute.checked = config.options.audio.mute.while.recording;
       if (streamwrite) streamwrite.checked = config.options.inteface.streamwrite;
+      if (mp4) mp4.disabled = MediaRecorder.isTypeSupported("video/mp4") === false;
       if (streamwrite) streamwrite.disabled = window.showSaveFilePicker ? false : true;
       document.documentElement.setAttribute("theme", theme !== undefined ? theme : "light");
       /*  */
@@ -553,12 +559,27 @@ var config = {
         config.options.inteface.minimize = e.target.checked;
       });      
       /*  */
-      seekable.addEventListener("change", function (e) {
-        config.options.inteface.seekable = e.target.checked;
-      });
-      /*  */
       mute.addEventListener("change", function (e) {
         config.options.audio.mute.while.recording = e.target.checked;
+      });
+      /*  */
+
+      mp4.addEventListener("change", function (e) {
+        config.options.inteface.mp4 = e.target.checked;
+        /*  */
+        if (e.target.checked) {
+          if (seekable) seekable.checked = false;
+          config.options.inteface.seekable = false;
+        }
+      });
+      /*  */
+      seekable.addEventListener("change", function (e) {
+        config.options.inteface.seekable = e.target.checked;
+        /*  */
+        if (e.target.checked) {
+          if (mp4) mp4.checked = false;
+          config.options.inteface.mp4 = false;
+        }
       });
       /*  */
       config.permissions.optional.contains(function (result) {

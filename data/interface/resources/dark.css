@@ -1,0 +1,52 @@
+html[theme='dark'], 
+html[theme='dark'] body {
+  color: #ebebeb;
+  color-scheme: dark;
+  background-color: #1e1e1e;
+}
+
+html[theme='dark'] .option {
+  background-color: rgb(255 255 255 / 3%);
+}
+
+html[theme='dark'] #theme:hover,
+html[theme='dark'] .option:hover,
+html[theme='dark'] .extra table tr td:hover,
+html[theme='dark'] .toolbar table tr td:hover {
+  background-color: rgb(255 255 255 / 5%);
+}
+
+html[theme='dark'] .footer,
+html[theme='dark'] .option #filepath {
+  background-color: #1e1e1e;
+}
+
+html[theme='dark'] .option #filepath {
+  color: #4e9fff;
+}
+
+html[theme='dark'] input,
+html[theme='dark'] label,
+html[theme='dark'] .status,
+html[theme='dark'] .elapsed,
+html[theme='dark'] .title p,
+html[theme='dark'] table tr td {
+  color: #ebebeb;
+}
+
+html[theme='dark'] #theme svg,
+html[theme='dark'] .extra table tr td svg,
+html[theme='dark'] .toolbar table tr td svg {
+  fill: #ebebeb;
+}
+
+html[theme='dark'] .option:has(#filepath) {
+  border-color: #555555;
+}
+
+html[theme='dark'] .info,
+html[theme='dark'] .logo,
+html[theme='dark'] .option,
+html[theme='dark'] .title:after {
+  border-color: rgb(255 255 255 / 10%);
+}

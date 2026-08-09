@@ -15,13 +15,13 @@ body {
   font-size: 13px;
   overflow: hidden;
   background-color: #fff;
-  font-family: arial, sans-serif;
+  font-family: system-ui, sans-serif;
 }
 
 table {
   margin: auto;
-  font-family: arial;
   border-spacing: 10px;
+  font-family: system-ui;
 }
 
 table tr td {
@@ -30,10 +30,12 @@ table tr td {
   padding: 0;
 }
 
-input, label, table tr td {
+input,
+label,
+table tr td {
   color: #333;
   font-size: 13px;
-  font-family: arial, sans-serif;
+  font-family: system-ui, sans-serif;
 }
 
 label {
@@ -53,10 +55,13 @@ label {
   vertical-align: middle;
 }
 
-input[type='radio'], input[type='checkbox'] {
+input[type='radio'],
+input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
   margin-top: 13px;
   vertical-align: bottom;
-  margin: auto 0 auto 15px;
+  margin: auto 0 auto 11px;
 }
 
 .container {
@@ -142,7 +147,7 @@ html[theme='dark'] .logo {
   padding: 0;
   margin: 5px;
   height: 48px;
-  width: 168px;
+  width: 158px;
   display: flex;
   flex-flow: row;
   cursor: pointer;
@@ -178,7 +183,7 @@ html[theme='dark'] .logo {
   height: 48px;
   opacity: 1.00;
   cursor: default;
-  margin-top: 5px;
+  margin-top: 15px;
   max-width: 700px;
   border-color: #999;
   background-color: #fff;
@@ -219,13 +224,13 @@ html[theme='dark'] .logo {
   line-height: 38px;
   flex-direction: row;
   text-transform: uppercase;
-  font-family: arial, sans-serif;
+  font-family: system-ui, sans-serif;
 }
 
 .title p {
   margin: 0;
   padding: 0;
-  color: #555;
+  color: #333;
   font-size: 12px;
   overflow: hidden;
   font-weight: 600;
@@ -234,7 +239,7 @@ html[theme='dark'] .logo {
   display: inline-block;
   vertical-align: middle;
   text-overflow: ellipsis;
-  font-family: arial, sans-serif;
+  font-family: system-ui, sans-serif;
 }
 
 .title:after {
@@ -288,7 +293,7 @@ html[theme='dark'] .logo {
   width: 100%;
   height: 48px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   margin-top: 10px;
   line-height: 50px;
@@ -467,6 +472,9 @@ html[theme='dark'] .logo {
     height: 48px;
     line-height: 48px;
   }
+  .option:has(#filepath) {
+    margin-top: 5px;
+  }
 }
 
 html[context='webapp'] .extra,
@@ -483,57 +491,4 @@ html[context='webapp'] #theme {
   right: 0;
   height: 42px;
   line-height: 42px;
-}
-
-html[theme='dark'], 
-html[theme='dark'] body {
-  color: #ebebeb;
-  color-scheme: dark;
-  background-color: #1e1e1e;
-}
-
-html[theme='dark'] .option {
-  background-color: rgb(255 255 255 / 3%);
-}
-
-html[theme='dark'] #theme:hover,
-html[theme='dark'] .option:hover,
-html[theme='dark'] .extra table tr td:hover,
-html[theme='dark'] .toolbar table tr td:hover {
-  background-color: rgb(255 255 255 / 5%);
-}
-
-html[theme='dark'] .footer,
-html[theme='dark'] .option #filepath {
-  background-color: #1e1e1e;
-}
-
-html[theme='dark'] .option #filepath {
-  color: #4e9fff;
-}
-
-html[theme='dark'] input,
-html[theme='dark'] label,
-html[theme='dark'] .status,
-html[theme='dark'] .elapsed,
-html[theme='dark'] .title p,
-html[theme='dark'] table tr td {
-  color: #ebebeb;
-}
-
-html[theme='dark'] #theme svg,
-html[theme='dark'] .extra table tr td svg,
-html[theme='dark'] .toolbar table tr td svg {
-  fill: #ebebeb;
-}
-
-html[theme='dark'] .option:has(#filepath) {
-  border-color: #555555;
-}
-
-html[theme='dark'] .info,
-html[theme='dark'] .logo,
-html[theme='dark'] .option,
-html[theme='dark'] .title:after {
-  border-color: rgb(255 255 255 / 10%);
 }
